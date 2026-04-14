@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD 플랫폼 메인</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef4ff;
+      --surface: rgba(255,255,255,0.88);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.96);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.22);
+      --line-strong: rgba(148,163,184,0.34);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.10);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-xl: 0 24px 72px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 42px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 26px rgba(15,23,42,0.06);
+      --max: 1320px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,250,252,0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.72);
+    }
+    .topbar-inner {
+      min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 12px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.84); color: var(--ink); }
+    section { padding: 34px 0 54px; }
+    .hero { padding: 64px 0 34px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(42px, 5vw, 72px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 18px; }
+    h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.03em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 900px; font-size: 20px; color: var(--muted); }
+    .hero-grid, .stats-grid, .case-grid, .filter-grid, .update-grid, .info-grid, .footer-grid, .hero-metrics { display: grid; gap: 18px; }
+    .hero-grid { grid-template-columns: 1.15fr 0.85fr; align-items: stretch; margin-top: 28px; }
+    .stats-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .case-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .filter-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .update-grid { grid-template-columns: 1.1fr 0.9fr; }
+    .info-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .footer-grid { grid-template-columns: 1.1fr 0.9fr; }
+    .hero-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 20px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-lg); backdrop-filter: blur(16px);
+    }
+    .card.strong { background: var(--surface-strong); border-color: var(--line-strong); box-shadow: var(--shadow-md); }
+    .card.soft { background: var(--surface-soft); }
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      box-shadow: var(--shadow-xl);
+    }
+    .hero-card p, .hero-card li { color: rgba(255,255,255,0.82); }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .muted { color: var(--muted); }
+    .btnrow { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 999px; font-weight: 800; background: white; color: var(--ink);
+    }
+    .btn.ghost { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.16); }
+    .mini-stat strong { display: block; font-size: 34px; letter-spacing: -0.04em; }
+    .mini-stat p { color: var(--muted); font-size: 14px; }
+    .tagrow, .pillrow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .pill { padding: 8px 12px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 13px; font-weight: 700; }
+    .case-card { display: grid; gap: 12px; position: relative; overflow: hidden; }
+    .case-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+      opacity: 0.85;
+    }
+    .case-title { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; }
+    .case-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .case-summary { color: var(--muted); font-size: 15px; }
+    .metric-list, .update-list, .note-list { display: grid; gap: 10px; margin-top: 14px; }
+    .metric, .update-item, .note {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.64);
+    }
+    .metric strong, .update-item strong, .note strong { display: block; margin-bottom: 4px; }
+    .filter-card { min-height: 148px; }
+    .footer-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      box-shadow: var(--shadow-xl);
+    }
+    .footer-card p, .footer-card li { color: rgba(255,255,255,0.82); }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    @media (max-width: 1100px) {
+      .hero-grid, .stats-grid, .case-grid, .filter-grid, .update-grid, .info-grid, .footer-grid { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">SD 플랫폼 메인</div>
+      <nav class="nav">
+        <a href="#hero">소개</a>
+        <a href="#stats">핵심 수치</a>
+        <a href="#cases">주목 사례</a>
+        <a href="#filters">탐색</a>
+        <a href="#updates">업데이트</a>
+        <a href="#about">플랫폼 설명</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="wrap">
+        <div class="eyebrow">Main</div>
+        <h1>SD 플랫폼 메인</h1>
+        <p class="lead">SD 플랫폼은 소셜디자이너의 활동을 단순 소개가 아니라 사업, 성과, 증빙, 협력 가능성까지 함께 읽을 수 있는 구조로 정리하는 아카이브형 플랫폼입니다.</p>
+
+        <div class="hero-grid">
+          <div class="hero-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Platform intro</span>
+            <h3>찾고, 읽고, 연결하는 입구</h3>
+            <p>이 홈 화면은 플랫폼의 철학을 설명하는 동시에, 사용자가 바로 사례를 탐색하고 비교할 수 있도록 설계됩니다. 브랜딩보다 탐색성과 신뢰가 우선입니다.</p>
+            <div class="btnrow">
+              <a class="btn" href="#cases">사례 둘러보기</a>
+              <a class="btn ghost" href="#about">플랫폼 설명 보기</a>
+            </div>
+            <div class="tagrow">
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">사례 아카이브</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">사업 카드</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">성과와 증빙</span>
+            </div>
+            <div class="hero-metrics">
+              <div class="note" style="background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.16);">
+                <strong style="color:white;">탐색 우선</strong>
+                <p style="color:rgba(255,255,255,0.78);">첫 화면에서 바로 사례와 분야 탐색으로 이어지게 한다.</p>
+              </div>
+              <div class="note" style="background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.16);">
+                <strong style="color:white;">근거 중심</strong>
+                <p style="color:rgba(255,255,255,0.78);">성과 수치와 업데이트 이력으로 신뢰를 만든다.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card soft strong">
+            <span class="badge blue">Home role</span>
+            <h3>이 화면에서 바로 전달해야 할 것</h3>
+            <div class="note-list">
+              <div class="note"><strong>무엇을 보여주는 플랫폼인가</strong><p class="muted">소셜디자이너의 사업과 활동 구조를 읽게 하는 플랫폼</p></div>
+              <div class="note"><strong>왜 신뢰할 수 있는가</strong><p class="muted">성과 수치, 증빙, 업데이트 이력이 함께 관리됨</p></div>
+              <div class="note"><strong>어디로 들어가면 되는가</strong><p class="muted">주목 사례, 분야별 탐색, 최근 업데이트로 바로 진입 가능</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats">
+      <div class="wrap">
+        <div class="label">Trust metrics</div>
+        <h2>핵심 수치 요약</h2>
+        <p class="muted" style="margin-bottom:18px;">플랫폼의 신뢰는 추상적 소개보다 실제 축적 현황에서 나온다.</p>
+        <div class="stats-grid">
+          <div class="card mini-stat"><span class="badge blue">등록 현황</span><strong>42</strong><p>등록된 SD 사례 수 (예시)</p></div>
+          <div class="card mini-stat"><span class="badge teal">활동 축적</span><strong>186</strong><p>누적 사업/활동 카드 수 (예시)</p></div>
+          <div class="card mini-stat"><span class="badge amber">연결 주체</span><strong>127</strong><p>누적 협력기관 수 (예시)</p></div>
+          <div class="card mini-stat"><span class="badge blue">근거 자산</span><strong>311</strong><p>공개 가능한 증빙/리포트 수 (예시)</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases">
+      <div class="wrap">
+        <div class="label">Featured cases</div>
+        <h2>주목 사례</h2>
+        <p class="muted" style="margin-bottom:18px;">상단에서 바로 대표 사례를 보여주고, 상세 페이지로 자연스럽게 연결한다.</p>
+        <div class="case-grid">
+          <div class="card case-card strong">
+            <span class="badge blue">운영형</span>
+            <div class="case-title">커피클레이</div>
+            <div class="case-meta">
+              <span class="pill">자원순환</span>
+              <span class="pill">시니어 생산</span>
+              <span class="pill">교육</span>
+            </div>
+            <p class="case-summary">커피박 재자원화, 시니어 생산 구조, 교육 프로그램, 확장 기획이 함께 작동하는 사례.</p>
+            <div class="metric-list">
+              <div class="metric"><strong>대표 포인트</strong><p class="muted">사업 카드 단위로 후원/투자 판단이 가능한 구조</p></div>
+            </div>
+          </div>
+          <div class="card case-card strong">
+            <span class="badge teal">지역기반</span>
+            <div class="case-title">동락점빵</div>
+            <div class="case-meta">
+              <span class="pill">로컬상권</span>
+              <span class="pill">커뮤니티</span>
+              <span class="pill">실험</span>
+            </div>
+            <p class="case-summary">지역 상점과 커뮤니티 실험을 연결하며, 생활권 단위의 변화를 만들어가는 사례.</p>
+            <div class="metric-list">
+              <div class="metric"><strong>대표 포인트</strong><p class="muted">지역 네트워크와 활동 기반이 어떻게 사업화되는지 확인 가능</p></div>
+            </div>
+          </div>
+          <div class="card case-card strong">
+            <span class="badge amber">창작기반</span>
+            <div class="case-title">스튜디오 어중간</div>
+            <div class="case-meta">
+              <span class="pill">창작</span>
+              <span class="pill">교육</span>
+              <span class="pill">지역연결</span>
+            </div>
+            <p class="case-summary">창작 활동과 지역 연결이 어떤 방식으로 사회적 의미와 사업 구조를 동시에 만드는지 보여주는 사례.</p>
+            <div class="metric-list">
+              <div class="metric"><strong>대표 포인트</strong><p class="muted">정성적 가치와 활동 구조를 함께 읽어야 하는 사례</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="filters">
+      <div class="wrap">
+        <div class="label">Explore</div>
+        <h2>분야와 상태로 탐색</h2>
+        <p class="muted" style="margin-bottom:18px;">검색 이전에 먼저 탐색 구조를 제공해 사용자가 길을 잃지 않게 한다.</p>
+        <div class="filter-grid">
+          <div class="card filter-card"><span class="badge blue">분야별</span><h3>주제 탐색</h3><p class="muted">자원순환, 교육, 돌봄, 로컬브랜딩, 문화기획 등</p></div>
+          <div class="card filter-card"><span class="badge teal">지역별</span><h3>지역 탐색</h3><p class="muted">권역, 시군구, 생활권 단위로 사례를 찾기</p></div>
+          <div class="card filter-card"><span class="badge amber">운영 단계별</span><h3>성장 상태 탐색</h3><p class="muted">실험형, 운영형, 확장형 등 단계 기준 탐색</p></div>
+          <div class="card filter-card"><span class="badge blue">협력 관점</span><h3>협력 유형 탐색</h3><p class="muted">후원 가능, 구매 가능, 파트너십 가능, 리포트 전환 가능</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="updates">
+      <div class="wrap">
+        <div class="label">Live archive</div>
+        <h2>최근 업데이트와 리포트</h2>
+        <p class="muted" style="margin-bottom:18px;">플랫폼이 살아 있는 아카이브라는 인상을 주는 블록이다.</p>
+        <div class="update-grid">
+          <div class="card">
+            <span class="badge blue">최근 업데이트 사례</span>
+            <div class="update-list">
+              <div class="update-item"><strong>커피클레이</strong><p class="muted">사업 카드 구조 재정리, 협력/투자 포인트 업데이트</p></div>
+              <div class="update-item"><strong>동락점빵</strong><p class="muted">지역 활동 축과 성과 서술 보완</p></div>
+              <div class="update-item"><strong>스튜디오 어중간</strong><p class="muted">창작 활동 아카이브 카드 정리</p></div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge teal">최근 리포트 / 자료</span>
+            <div class="update-list">
+              <div class="update-item"><strong>통합모델 검토 요약</strong><p class="muted">각 사례의 성장 단계와 협력 가능성 해석</p></div>
+              <div class="update-item"><strong>대표 성과 리포트</strong><p class="muted">주요 수치와 정성 성과를 함께 보여주는 리포트</p></div>
+              <div class="update-item"><strong>증빙 패키지</strong><p class="muted">기사, 사진, 운영 기록, 피드백 정리</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="label">Platform perspective</div>
+        <h2>이 플랫폼은 무엇을 기록하는가</h2>
+        <div class="info-grid" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge blue">기록 대상</span>
+            <h3>완성된 성과만이 아니라 시도와 운영 구조</h3>
+            <p class="muted">소셜디자이너의 활동은 숫자만으로 설명되지 않는다. 판단, 관계, 실험 경험도 함께 기록해야 한다.</p>
+          </div>
+          <div class="card">
+            <span class="badge teal">해석 관점</span>
+            <h3>정량과 정성을 분리하지 않고 함께 읽기</h3>
+            <p class="muted">수치와 이야기, 사업 구조와 증빙을 분리하지 않고 연결해 읽게 하는 것이 핵심이다.</p>
+          </div>
+          <div class="card">
+            <span class="badge amber">활용 목적</span>
+            <h3>소개를 넘어 협력과 후속 판단의 기반 만들기</h3>
+            <p class="muted">이 플랫폼은 단순 소개 페이지가 아니라 후원, 협력, 투자, 제안의 근거 페이지가 되어야 한다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Main structure</span>
+            <h3>이 페이지에 필요한 핵심 기능</h3>
+            <p>플랫폼 소개, 핵심 수치, 주목 사례, 탐색 진입, 최근 업데이트를 한 화면 안에서 보여주며 사용자가 곧바로 목록이나 상세 페이지로 들어갈 수 있어야 한다.</p>
+          </div>
+          <div class="card soft">
+            <span class="badge blue">Page summary</span>
+            <h3>구조 요약</h3>
+            <ul>
+              <li>상단에서 플랫폼 정체성과 진입 이유를 설명</li>
+              <li>중단에서 핵심 수치와 대표 사례를 제시</li>
+              <li>하단에서 탐색과 최신성, 플랫폼 관점을 보완</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

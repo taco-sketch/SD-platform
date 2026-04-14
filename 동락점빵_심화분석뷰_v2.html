@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>동락점빵 심화분석뷰 v2</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef2ff;
+      --surface: rgba(255,255,255,0.86);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.94);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.24);
+      --line-strong: rgba(148,163,184,0.36);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.10);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --shadow-xl: 0 26px 80px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 40px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 24px rgba(15,23,42,0.05);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1240px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(248,250,252,0.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(255,255,255,0.72); }
+    .topbar-inner { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 10px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.82); color: var(--ink); }
+    section { padding: 34px 0 56px; }
+    .hero { padding: 74px 0 40px; }
+    .eyebrow { display: inline-block; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px; }
+    h1 { font-size: clamp(42px, 6vw, 74px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 16px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.22; letter-spacing: -0.03em; margin: 0 0 10px; }
+    h4 { font-size: 18px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 920px; font-size: 20px; color: var(--muted); }
+    .section-head { max-width: 920px; margin-bottom: 24px; }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .hero-panel, .footer-box { border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); }
+    .hero-panel { margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; }
+    .hero-panel .muted, .hero-panel p { color: rgba(255,255,255,0.82); }
+    .footer-box { padding: 32px; background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%); color: white; }
+    .footer-box p, .footer-box li { color: rgba(255,255,255,0.82); }
+    .grid-2, .grid-3, .grid-4, .hero-grid, .meta-grid, .gate-grid, .score-grid, .review-grid, .archive-grid, .detail-grid { display: grid; gap: 18px; }
+    .hero-grid { grid-template-columns: 1.35fr 0.65fr; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .meta-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .gate-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .score-grid { grid-template-columns: 1fr 1fr; }
+    .review-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .archive-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+    .card, .meta-item, .gate-card, .archive-card, .mini, .score-row, .review-box, .table-row, .section-box {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); backdrop-filter: blur(16px);
+    }
+    .card.strong, .archive-card.strong, .gate-card.strong, .review-box.strong, .table-row.strong { background: var(--surface-strong); border-color: var(--line-strong); }
+    .card, .gate-card, .archive-card, .mini, .review-box, .table-row, .section-box { padding: 22px; }
+    .meta-item { padding: 16px; }
+    .card.soft, .archive-card.soft { background: var(--surface-soft); }
+    .badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px; }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .muted { color: var(--muted); }
+    .pillrow, .tagrow { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { padding: 9px 11px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 12px; font-weight: 700; }
+    .hero-panel .pill { background: rgba(255,255,255,0.12); color: white; }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    .archive-card .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+    .archive-card { position: relative; overflow: hidden; }
+    .archive-card::after { content: ""; position: absolute; inset: auto 0 0 0; height: 3px; background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%); opacity: 0.85; }
+    .archive-title { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; }
+    .sub { color: var(--muted); margin-top: 4px; }
+    .status { min-width: 170px; border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: rgba(255,255,255,0.92); }
+    .timeline { display: grid; gap: 12px; }
+    .timeline-item { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: rgba(255,255,255,0.64); display: grid; grid-template-columns: 68px 1fr; gap: 12px; }
+    .step { font-weight: 900; color: var(--blue); }
+    .score-list { display: grid; gap: 10px; }
+    .score-row { display: grid; grid-template-columns: 100px 1fr 44px; gap: 12px; align-items: center; padding: 14px; background: rgba(255,255,255,0.64); }
+    .bar { height: 10px; border-radius: 999px; background: rgba(15,23,42,0.08); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #2563eb 0%, #0f766e 100%); }
+    .radar-wrap { display: flex; justify-content: center; margin-top: 16px; }
+    .radar-wrap svg { width: 100%; max-width: 430px; height: auto; }
+    .section-box h4 { margin-bottom: 10px; color: var(--ink); }
+    .table-list { display: grid; gap: 12px; }
+    .table-row { padding: 18px 20px; }
+    @media (max-width: 1080px) {
+      .hero-grid, .grid-2, .grid-3, .grid-4, .meta-grid, .gate-grid, .score-grid, .review-grid, .detail-grid, .timeline-item, .score-row { grid-template-columns: 1fr; }
+      .archive-card .header { flex-direction: column; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">동락점빵 심화분석뷰 v2</div>
+      <nav class="nav">
+        <a href="#meta">요약</a>
+        <a href="#logic">구조</a>
+        <a href="#archive">아카이브</a>
+        <a href="#gate">검토</a>
+        <a href="#connect">협력</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Deep analysis v2</div>
+        <h1>동락점빵</h1>
+        <p class="lead">농촌 식품사막화와 생활 인프라 붕괴 문제를 이동장터, 복지 연계, 공공급식, 지역 관계망으로 풀어내는 생활권 기반 공동체 사례입니다.</p>
+        <div class="hero-panel">
+          <div class="hero-grid">
+            <div>
+              <div class="label" style="color:#bfdbfe;">Core reading</div>
+              <h3 style="font-size:34px; line-height:1.12; margin:0 0 12px; color:white;">강한 현장성을 생활 인프라 모델로 바꾸고 있지만, 아직 학습·운영 문서화가 충분히 따라오지 못한 팀</h3>
+              <p>동락점빵은 이동장터를 단순 유통이 아니라 식품 접근성 회복, 고립가구 안부 확인, 공공급식 연계, 지역경제 순환까지 아우르는 생활권 기반 모델로 운영합니다. 현재 병목은 활동 부족이 아니라, 그 활동을 학습 구조와 운영 문서로 번역하는 수준에 있습니다.</p>
+              <div class="pillrow" style="margin-top:16px;">
+                <span class="pill">생활권 밀도형</span>
+                <span class="pill">관계기반 공동체형</span>
+              </div>
+            </div>
+            <div class="mini" style="background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.18); color:white;">
+              <div class="label" style="color:#bfdbfe;">Quick status</div>
+              <div class="pillrow">
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">Gate A: S1 발굴형</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">Gate B: Conditional Pass</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">Gate P: Hold</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">권장 리포트: 정책형·사례형</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="meta">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Information summary</div>
+          <h2>정보 요약</h2>
+          <p class="muted">정체성과 외부 번역 가능성을 함께 봅니다.</p>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-item"><strong>조직 형태</strong><p class="muted">사회적협동조합</p></div>
+          <div class="meta-item"><strong>활동 지역</strong><p class="muted">전남 영광군 묘량면</p></div>
+          <div class="meta-item"><strong>핵심 분야</strong><p class="muted">유통 · 복지 · 생활 인프라</p></div>
+          <div class="meta-item"><strong>주요 활동 유형</strong><p class="muted">이동장터 · 복지연계 · 공공급식 · 생활 모니터링</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Strengths</div>
+          <h2>왜 주목해야 하는가</h2>
+        </div>
+        <div class="grid-3">
+          <div class="card"><h3>문제와 현장이 맞닿아 있음</h3><p class="muted">식품사막화와 구매 접근성 붕괴를 실제 순회 운영으로 대응합니다.</p></div>
+          <div class="card"><h3>생활 인프라 기능이 강함</h3><p class="muted">판매, 안부 확인, 복지 연결, 공공급식이 하나의 서비스처럼 결합됩니다.</p></div>
+          <div class="card"><h3>활동 대비 기록이 약함</h3><p class="muted">낮은 판정의 원인은 활동 부재보다 기록 상한에 가깝습니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="logic">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Problem & solution</div>
+          <h2>문제와 해결 방식</h2>
+          <p class="muted">동락점빵은 이동장터를 넘어 농촌 생활 인프라를 복원하는 팀으로 읽어야 합니다.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <span class="badge amber">핵심 문제 문장</span>
+            <p>농촌 고령화와 상점 붕괴, 대중교통 취약으로 인해 주민들이 기본적인 식품과 생활필수품조차 스스로 조달하기 어려운 식품사막 상태가 지속되고 있습니다.</p>
+          </div>
+          <div class="card">
+            <span class="badge blue">핵심 해결 문장</span>
+            <p>동락점빵은 이동장터를 중심으로 생필품 공급, 개별 방문, 복지 연계, 공공급식, 지역경제 순환을 결합해 농촌 생활권의 접근성과 안전망을 회복하는 생활인프라 모델을 운영합니다.</p>
+          </div>
+        </div>
+        <div class="timeline" style="margin-top:18px;">
+          <div class="timeline-item"><div class="step">STEP 1</div><div><strong>이동장터 순회 운영</strong><p class="muted">매주 42개 마을을 돌며 기본 접근성을 회복합니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 2</div><div><strong>개별 방문과 생활 모니터링</strong><p class="muted">고립가구 안부 확인과 생활 위험 파악이 함께 이뤄집니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 3</div><div><strong>복지·행정·공공급식 연결</strong><p class="muted">면사무소, 복지팀, 학교와 연결해 운영을 확장합니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 4</div><div><strong>정책 전이 가능성 형성</strong><p class="muted">정책 벤치마킹과 타지역 확장 가능성이 생깁니다.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="archive">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Project & activity archive</div>
+          <h2>사업/활동 아카이브</h2>
+          <p class="muted">실제 사업 축 기준 카드 구성입니다.</p>
+        </div>
+        <div class="archive-grid">
+          <div class="archive-card strong">
+            <div class="header"><div><span class="badge blue">사업 카드 1</span><div class="archive-title">이동장터 운영</div><div class="sub">식품 접근성과 선택권을 회복하는 핵심 운영 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">완전 공개</span><span class="pill">L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>운영 정보</h4><ul><li>대상: 고령 주민, 거동 불편 가구</li><li>주기: 매주 2회</li><li>범위: 42개 마을</li><li>운영 인력: 3명</li></ul></div>
+              <div class="section-box"><h4>활동 내용</h4><p class="muted">생필품 판매, 개별 전달, 안부 확인을 함께 수행하는 생활권 인프라 기능입니다.</p></div>
+            </div>
+            <div class="detail-grid" style="margin-top:16px;"><div class="section-box"><h4>아웃풋</h4><ul><li>이용인원 3,505명</li><li>장보기 지원 105회</li><li>42개 자연부락 순회</li></ul></div><div class="section-box"><h4>아웃컴</h4><ul><li>구매 난민 문제 완화</li><li>선택권과 생활 자율성 회복</li><li>안전 사각지대 조기 발견</li></ul></div></div>
+          </div>
+          <div class="archive-card soft strong">
+            <div class="header"><div><span class="badge teal">사업 카드 2</span><div class="archive-title">복지 연계 및 생활 모니터링</div><div class="sub">유통 접점을 안전망으로 확장하는 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">요약 공개</span><span class="pill">L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>활동 내용</h4><p class="muted">고립가구를 방문하며 주거, 건강, 돌봄 문제를 파악하고 필요시 복지와 연결합니다.</p></div>
+              <div class="section-box"><h4>근거 포인트</h4><ul><li>병환자 방문 및 고립가구 지원 105회</li><li>복지팀, 행정 연계 근거 확보</li><li>안부 확인 기록 축적</li></ul></div>
+            </div>
+          </div>
+          <div class="archive-card strong">
+            <div class="header"><div><span class="badge amber">사업 카드 3</span><div class="archive-title">공공급식·지역경제 연계</div><div class="sub">반복 수요와 매출 구조를 만드는 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">요약 공개</span><span class="pill">L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>경제성과</h4><ul><li>2024년 매출 6천만원</li><li>2025년 7천만원 상회 예상</li><li>외상 환원율 90% 이상</li></ul></div>
+              <div class="section-box"><h4>의미</h4><p class="muted">공공급식, 학교, 지역행사 연계를 통해 지속 가능성을 보완합니다.</p></div>
+            </div>
+          </div>
+          <div class="archive-card soft strong">
+            <div class="header"><div><span class="badge blue">사업 카드 4</span><div class="archive-title">정책 벤치마킹 및 전이 가능성</div><div class="sub">타지역 번역 가능성을 보여주는 확산 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">요약 공개</span><span class="pill">L2</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>대표 근거</h4><ul><li>농식품부 벤치마킹 사례</li><li>'가가호호 이동장터' 정책사업 모델화 언급</li><li>전국 식품사막 문제와의 연결성</li></ul></div>
+              <div class="section-box"><h4>현재 한계</h4><p class="muted">전이 가능성은 높지만 매뉴얼과 적용 패키지는 아직 미완입니다.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gate">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Integrated review</div>
+          <h2>통합모델 검토</h2>
+        </div>
+        <div class="gate-grid">
+          <div class="gate-card strong"><span class="badge blue">성장 단계</span><h3>S1 발굴형</h3><p class="muted">현장성과 생활 인프라성은 강하지만 학습·운영 문서화가 제한적이어서 발굴형으로 읽는 것이 적절합니다.</p></div>
+          <div class="gate-card strong"><span class="badge teal">협력 가능성</span><h3>조건부 높음</h3><p class="muted">공공협력 언어는 분명하지만, 제안 패키지와 납품 구조는 더 정리될 필요가 있습니다.</p></div>
+          <div class="gate-card strong"><span class="badge amber">리포트 전환 가능성</span><h3>보류</h3><p class="muted">정책형·사례형 브리프는 가능하지만 성과형 리포트로는 아직 이릅니다.</p></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge blue">항목별 검토의견</span>
+            <ul>
+              <li>A2, 운영 개선 로그와 버전업 기록 추가 필요</li>
+              <li>A4, 조합원 의견이 운영 변경으로 이어진 기록 보강 필요</li>
+              <li>A7, 회의·결정·데이터 관리 문서 보강 필요</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <span class="badge amber">현재 팀 상태 명명</span>
+            <p class="muted">생활권 밀도형, 관계기반 공동체형, 현장 강도는 높지만 기록 상한이 분명한 팀</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Score & review</div>
+          <h2>통합모델 항목별 검토와 시각화</h2>
+          <p class="muted">커피클레이 심화분석뷰 v2 기준에 맞춰 6개 핵심 항목은 레이더로, 각 항목 해석은 별도 검토 영역으로 함께 보여줍니다.</p>
+        </div>
+        <div class="score-grid">
+          <div class="card strong"><span class="badge blue">SD표준모델</span><h3>A게이트 6축 시각화</h3><p class="muted">A7 조직역량은 별도 수치로 보고, 육각형 도표는 핵심 6축(A1~A6)의 균형을 보여줍니다.</p><div class="radar-wrap"><svg viewBox="0 0 420 380" role="img" aria-label="동락점빵 A게이트 레이더 차트"><g transform="translate(210,185)"><polygon points="0,-120 103.9,-60 103.9,60 0,120 -103.9,60 -103.9,-60" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-96 83.1,-48 83.1,48 0,96 -83.1,48 -83.1,-48" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-72 62.4,-36 62.4,36 0,72 -62.4,36 -62.4,-36" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-48 41.6,-24 41.6,24 0,48 -41.6,24 -41.6,-24" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-24 20.8,-12 20.8,12 0,24 -20.8,12 -20.8,-12" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><line x1="0" y1="0" x2="0" y2="-120" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="103.9" y2="-60" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="103.9" y2="60" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="0" y2="120" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="-103.9" y2="60" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="-103.9" y2="-60" stroke="rgba(17,24,39,0.12)"/><polygon points="0,-72 20.8,-12 62.4,36 0,48 -62.4,36 -72.7,-42" fill="rgba(37,99,235,0.18)" stroke="#2563eb" stroke-width="3"/><circle cx="0" cy="-72" r="4" fill="#2563eb"/><circle cx="20.8" cy="-12" r="4" fill="#2563eb"/><circle cx="62.4" cy="36" r="4" fill="#2563eb"/><circle cx="0" cy="48" r="4" fill="#2563eb"/><circle cx="-62.4" cy="36" r="4" fill="#2563eb"/><circle cx="-72.7" cy="-42" r="4" fill="#2563eb"/><text x="0" y="-138" text-anchor="middle" font-size="13" fill="#6b7280">A1 문제정의</text><text x="123" y="-66" text-anchor="start" font-size="13" fill="#6b7280">A2 실험학습</text><text x="123" y="72" text-anchor="start" font-size="13" fill="#6b7280">A3 현장운영</text><text x="0" y="144" text-anchor="middle" font-size="13" fill="#6b7280">A4 시민협력</text><text x="-123" y="72" text-anchor="end" font-size="13" fill="#6b7280">A5 지속자원</text><text x="-123" y="-66" text-anchor="end" font-size="13" fill="#6b7280">A6 확산전이</text></g></svg></div></div>
+          <div class="card strong"><span class="badge teal">항목별 검토</span><div class="table-list"><div class="table-row strong"><strong>🧭 문제정의, 6점</strong><p class="muted">식품사막화와 구매 접근성 붕괴를 지역의 구조적 문제로 명확하게 정의하고 있습니다. 생활권 언어로 설명되는 점이 큰 강점입니다.</p></div><div class="table-row strong"><strong>🧪 실험학습, 2점</strong><p class="muted">운영 개선은 있었을 가능성이 높지만, 무엇을 바꾸고 어떻게 나아졌는지 보여주는 버전업 기록이 부족합니다. 그래서 실제보다 낮게 읽힐 위험이 있습니다.</p></div><div class="table-row strong"><strong>🏭 현장운영, 6점</strong><p class="muted">매주 42개 마을 순회, 개별 방문, 공공급식 연계까지 실제 운영 구조가 매우 분명합니다. 단발 행사가 아니라 생활권 서비스로 작동하고 있습니다.</p></div><div class="table-row strong"><strong>👥 시민협력, 4점</strong><p class="muted">조합원과 주민, 지역 기관의 협력 구조는 있으나, 시민 의견이 실제 의사결정과 운영 규칙 변경으로 이어진 기록은 더 필요합니다.</p></div><div class="table-row strong"><strong>💰 지속자원, 6점</strong><p class="muted">매출 증가, 공공급식 연계, 외상 환원율 등 지속 기반은 보입니다. 다만 수익, 공공, 후원 자원이 어떻게 버티는 구조를 만드는지 더 정리할 필요가 있습니다.</p></div><div class="table-row strong"><strong>🚀 확산전이, 7점</strong><p class="muted">정책 벤치마킹과 타지역 번역 가능성이 이미 확인됩니다. 이 점이 동락점빵의 가장 큰 확장 잠재력입니다.</p></div><div class="table-row strong"><strong>🧩 조직역량, 5점</strong><p class="muted">소수 인력으로 실제 운영은 강하게 유지되고 있습니다. 다만 회의 구조, 운영 문서, 데이터 관리, 역할 분담이 더 정리되면 신뢰도가 크게 높아질 수 있습니다.</p></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Interpretation</div>
+          <h2>종합 검토의견</h2>
+        </div>
+        <div class="review-grid">
+          <div class="review-box"><span class="badge blue">장점</span><h3>강한 현장성과 생활 인프라 기능이 분명하게 보입니다</h3><p class="muted">동락점빵은 단순 이동장터가 아니라 지역의 식품 접근성과 돌봄 사각지대를 함께 붙드는 생활권 모델로 읽힙니다. 그래서 공공 영역과의 협력 설득력이 높습니다.</p></div>
+          <div class="review-box"><span class="badge amber">한계</span><h3>강한 활동을 더 쉽게 믿게 만드는 정리 작업이 아직 필요합니다</h3><p class="muted">활동 자체는 강하지만, 개선 기록, 운영 문서, 시민 의사결정 반영 근거가 더 정리되면 신뢰도와 확장 가능성이 더 높아집니다. 즉 약한 팀이라기보다 정리가 더 필요합니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Strengths & tasks</div>
+          <h2>강점과 보완 과제</h2>
+        </div>
+        <div class="grid-2">
+          <div class="card"><h3>강점</h3><ul><li>식품사막 문제를 생활권 언어로 정확히 정의함</li><li>이동장터와 복지 연계가 실제 인프라 기능을 수행함</li><li>정책 벤치마킹이 가능할 정도의 전이 잠재력이 있음</li></ul></div>
+          <div class="card"><h3>보완 과제</h3><ul><li>운영 개선 로그와 전후 비교표 작성</li><li>조합원 간담회와 운영 변경 연결 기록</li><li>회의록, 역할표, 데이터 관리 기준 문서화</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Connection</div>
+          <h2>협력과 제안</h2>
+        </div>
+        <div class="table-list">
+          <div class="table-row"><strong>협력 파트너</strong><p class="muted">지자체, 복지기관, 농촌생활권 중간지원조직, 공공급식 운영 주체</p></div>
+          <div class="table-row"><strong>협력 방식</strong><p class="muted">이동복지, 생활 SOC, 공공급식 연계, 농촌 생활인프라 실험 사업</p></div>
+          <div class="table-row"><strong>기대효과</strong><p class="muted">생활권 접근성과 안전망을 동시에 회복하고, 농촌 소멸 대응 모델을 실제 운영 사업으로 전환할 수 있습니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="footer-box">
+          <div class="label" style="color:#93c5fd;">Final opinion</div>
+          <h2 style="margin-top:0; color:white;">동락점빵과 협력하면 농촌 생활 인프라와 돌봄 안전망을 함께 움직이는 모델을 만들 수 있습니다.</h2>
+          <p>동락점빵의 강점은 이동장터를 판매가 아니라 생활 인프라와 관계망의 접점으로 운영한다는 데 있습니다. 그래서 동락점빵과 협력하면 농촌 지역의 식품 접근성과 돌봄 사각지대를 동시에 다루는 사업을 만들 수 있고, 공공급식과 행정 협력까지 연결된 생활권 기반 실험을 더 넓은 정책·사업 언어로 확장할 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

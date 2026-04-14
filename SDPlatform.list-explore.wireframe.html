@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD 목록 / 탐색</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef4ff;
+      --surface: rgba(255,255,255,0.88);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.96);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.22);
+      --line-strong: rgba(148,163,184,0.34);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.10);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-xl: 0 24px 72px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 42px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 26px rgba(15,23,42,0.06);
+      --max: 1360px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,250,252,0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.72);
+    }
+    .topbar-inner {
+      min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 12px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.84); color: var(--ink); }
+    section { padding: 32px 0 52px; }
+    .hero { padding: 48px 0 24px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(36px, 4.6vw, 60px); line-height: 1.05; letter-spacing: -0.06em; margin: 0 0 14px; }
+    h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.03em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 960px; font-size: 19px; color: var(--muted); }
+    .main-layout, .filter-grid, .card-grid, .footer-grid { display: grid; gap: 18px; }
+    .main-layout { grid-template-columns: 300px 1fr; align-items: start; margin-top: 24px; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .footer-grid { grid-template-columns: 1.05fr 0.95fr; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-lg); backdrop-filter: blur(16px);
+    }
+    .card.strong { background: var(--surface-strong); border-color: var(--line-strong); box-shadow: var(--shadow-md); }
+    .card.soft { background: var(--surface-soft); }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .muted { color: var(--muted); }
+    .pillrow, .tagrow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .pill { padding: 8px 12px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 13px; font-weight: 700; }
+    .filter-item, .result-card, .mini-note {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.64);
+    }
+    .result-card { position: relative; overflow: hidden; }
+    .result-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+      opacity: 0.85;
+    }
+    .filter-list, .note-list { display: grid; gap: 10px; margin-top: 14px; }
+    .result-card { display: grid; gap: 12px; }
+    .result-card strong, .metric-box strong, .mini-note strong, .filter-item strong { display:block; margin-bottom:4px; }
+    .result-title { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+    .result-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .result-summary { color: var(--muted); font-size: 15px; }
+    .metric-box {
+      border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: rgba(255,255,255,0.56);
+    }
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .toolbar .input {
+      flex: 1 1 280px;
+      border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; background: rgba(255,255,255,0.78); color: var(--muted);
+    }
+    .sort-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+    .sort-tab { padding: 9px 12px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 13px; font-weight: 700; }
+    .sort-tab.active { background: var(--blue-soft); color: var(--blue); }
+    .footer-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white; border-radius: var(--radius-xl); padding: 26px; box-shadow: var(--shadow-xl);
+    }
+    .footer-card p, .footer-card li { color: rgba(255,255,255,0.84); }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    @media (max-width: 1180px) {
+      .main-layout, .card-grid, .footer-grid { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">SD 목록 / 탐색</div>
+      <nav class="nav">
+        <a href="#hero">탐색 개요</a>
+        <a href="#filters">필터</a>
+        <a href="#results">결과 카드</a>
+        <a href="#footer">흐름 역할</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="wrap">
+        <div class="eyebrow">Explore</div>
+        <h1>SD 목록 / 탐색</h1>
+        <p class="lead">이 화면은 검색 결과 페이지가 아니라, 분야, 지역, 운영 단계, 협력 관점으로 사례를 정리해 사용자가 자신에게 맞는 SD를 비교하고 선택하게 하는 목록형 탐색 페이지다.</p>
+      </div>
+    </section>
+
+    <section id="filters">
+      <div class="wrap">
+        <div class="label">Explore structure</div>
+        <h2>필터와 결과를 함께 보는 구조</h2>
+        <div class="main-layout">
+          <aside class="card soft strong">
+            <span class="badge blue">탐색 필터</span>
+            <div class="filter-grid">
+              <div class="filter-item"><strong>분야</strong><p class="muted">자원순환, 교육, 돌봄, 로컬브랜딩, 문화기획</p></div>
+              <div class="filter-item"><strong>지역</strong><p class="muted">권역, 시군구, 생활권</p></div>
+              <div class="filter-item"><strong>운영 단계</strong><p class="muted">실험형, 운영형, 확장형</p></div>
+              <div class="filter-item"><strong>협력 관점</strong><p class="muted">후원 가능, 구매 가능, 파트너십 가능, 리포트 전환 가능</p></div>
+              <div class="filter-item"><strong>공개 수준</strong><p class="muted">공개 상세, 심화 분석뷰, 자료 보유 상태</p></div>
+            </div>
+            <div class="note-list">
+              <div class="mini-note"><strong>탐색 원칙</strong><p class="muted">필터는 많아도, 실제 사용자는 2~3개 기준만 자주 쓴다. 우선순위가 높은 필터가 먼저 보여야 한다.</p></div>
+            </div>
+          </aside>
+
+          <div class="card strong">
+            <div class="toolbar">
+              <div class="input">검색어 입력, 팀명 / 주제 / 지역 / 키워드</div>
+              <div class="sort-tabs">
+                <span class="sort-tab active">추천순</span>
+                <span class="sort-tab">최신순</span>
+                <span class="sort-tab">성과순</span>
+                <span class="sort-tab">협력가능순</span>
+              </div>
+            </div>
+
+            <div class="pillrow">
+              <span class="pill">자원순환</span>
+              <span class="pill">운영형</span>
+              <span class="pill">협력 가능</span>
+            </div>
+
+            <div class="card-grid" id="results" style="margin-top:18px;">
+              <div class="result-card">
+                <span class="badge blue">운영형</span>
+                <div class="result-title">커피클레이</div>
+                <div class="result-meta">
+                  <span class="pill">자원순환</span>
+                  <span class="pill">시니어 생산</span>
+                  <span class="pill">교육</span>
+                </div>
+                <p class="result-summary">커피박 재자원화, 시니어 생산 구조, 교육 프로그램, 확장 기획을 함께 운영하는 사례.</p>
+                <div class="metric-box"><strong>대표 포인트</strong><p class="muted">사업 카드 단위로 협력과 후원 지점을 판단하기 좋은 구조</p></div>
+                <div class="metric-box"><strong>연결 화면</strong><p class="muted">공개 상세 보기 / 심화 분석뷰 보기</p></div>
+              </div>
+
+              <div class="result-card">
+                <span class="badge teal">운영형</span>
+                <div class="result-title">동락점빵</div>
+                <div class="result-meta">
+                  <span class="pill">로컬상권</span>
+                  <span class="pill">커뮤니티</span>
+                  <span class="pill">실험</span>
+                </div>
+                <p class="result-summary">지역 상점과 사람들의 생활권 관계를 기반으로 커뮤니티 실험을 이어가는 사례.</p>
+                <div class="metric-box"><strong>대표 포인트</strong><p class="muted">지역 활동과 사업 구조의 연결성을 읽는 데 적합</p></div>
+                <div class="metric-box"><strong>연결 화면</strong><p class="muted">공개 상세 보기 / 리포트 요약 보기</p></div>
+              </div>
+
+              <div class="result-card">
+                <span class="badge amber">실험형</span>
+                <div class="result-title">스튜디오 어중간</div>
+                <div class="result-meta">
+                  <span class="pill">창작</span>
+                  <span class="pill">교육</span>
+                  <span class="pill">지역연결</span>
+                </div>
+                <p class="result-summary">창작 활동과 지역 연결을 바탕으로 실험적 사업 구조를 만들어가는 사례.</p>
+                <div class="metric-box"><strong>대표 포인트</strong><p class="muted">정성적 가치와 활동 구조를 함께 읽어야 하는 사례</p></div>
+                <div class="metric-box"><strong>연결 화면</strong><p class="muted">공개 상세 보기</p></div>
+              </div>
+
+              <div class="result-card">
+                <span class="badge blue">추천 사례</span>
+                <div class="result-title">신규 사례 B</div>
+                <div class="result-meta">
+                  <span class="pill">돌봄</span>
+                  <span class="pill">지역기반</span>
+                </div>
+                <p class="result-summary">돌봄과 지역 네트워크를 바탕으로 주민 삶의 문제를 풀어가는 초기 운영 사례.</p>
+                <div class="metric-box"><strong>대표 포인트</strong><p class="muted">운영 초기 단계 비교군으로 활용 가능</p></div>
+                <div class="metric-box"><strong>연결 화면</strong><p class="muted">공개 상세 보기</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Explore structure</span>
+            <h3>이 페이지에 필요한 핵심 기능</h3>
+            <p>필터, 검색, 정렬, 결과 카드가 함께 작동해야 하며, 사용자가 분야, 지역, 운영 단계, 협력 가능성 기준으로 사례를 좁혀가며 비교할 수 있어야 한다.</p>
+          </div>
+          <div class="card soft">
+            <span class="badge blue">Page summary</span>
+            <h3>구조 요약</h3>
+            <ul>
+              <li>좌측 또는 상단에 주요 필터 배치</li>
+              <li>중앙에는 비교 가능한 결과 카드 제시</li>
+              <li>각 결과는 공개 상세나 심화분석으로 연결</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

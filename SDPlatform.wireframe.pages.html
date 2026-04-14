@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD Platform Wireframe Pages</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef2ff;
+      --surface: rgba(255,255,255,0.86);
+      --surface-soft: rgba(255,255,255,0.72);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.24);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.1);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.1);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --shadow-xl: 0 24px 70px rgba(15,23,42,0.10);
+      --shadow-lg: 0 16px 40px rgba(15,23,42,0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1320px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(248,250,252,0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.72);
+    }
+    .topbar-inner {
+      min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 10px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.84); color: var(--ink); }
+    section { padding: 36px 0 50px; }
+    .hero { padding: 72px 0 42px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px;
+      background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(40px, 5vw, 72px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 16px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.03em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 940px; font-size: 20px; color: var(--muted); }
+    .section-head { max-width: 920px; margin-bottom: 22px; }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px;
+      box-shadow: var(--shadow-lg); backdrop-filter: blur(16px);
+    }
+    .card.soft { background: var(--surface-soft); }
+    .page-shell {
+      background: rgba(255,255,255,0.58); border: 1px solid rgba(255,255,255,0.74); border-radius: var(--radius-xl);
+      padding: 22px; box-shadow: var(--shadow-xl);
+    }
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;
+    }
+    .page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; }
+    .route {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; background: rgba(15,23,42,0.06); color: var(--muted); font-size: 12px; font-weight: 800;
+    }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .muted { color: var(--muted); }
+    .grid-2, .grid-3, .grid-4, .auth-grid, .team-grid, .measurement-grid, .dashboard-grid, .detail-grid, .notifications-grid, .overview-grid {
+      display: grid; gap: 18px;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .auth-grid { grid-template-columns: 0.9fr 1.1fr; }
+    .team-grid { grid-template-columns: 0.95fr 1.05fr; }
+    .measurement-grid { grid-template-columns: 0.9fr 1.1fr; }
+    .dashboard-grid { grid-template-columns: 1.15fr 0.85fr; }
+    .detail-grid { grid-template-columns: 0.95fr 1.05fr; }
+    .notifications-grid { grid-template-columns: 1fr; }
+    .overview-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }
+    .input {
+      border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; background: rgba(255,255,255,0.76); color: var(--muted);
+    }
+    .textarea { min-height: 110px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 999px; font-weight: 800;
+      background: linear-gradient(135deg, #111827 0%, #1d4ed8 100%); color: white;
+    }
+    .btn.ghost { background: rgba(255,255,255,0.84); color: var(--ink); border: 1px solid var(--line); }
+    .pillrow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .pill { padding: 9px 12px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 13px; font-weight: 700; }
+    .mini-list, .task-list, .table, .notice-list, .timeline, .menu-list { display: grid; gap: 10px; }
+    .mini, .task, .row, .notice, .timeline-item, .menu-item {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.64);
+    }
+    .row { display: grid; grid-template-columns: 1.2fr 0.45fr 1.35fr; gap: 10px; align-items: center; }
+    .menu-item.active { border-color: rgba(37,99,235,0.34); background: rgba(37,99,235,0.08); }
+    .page-layout {
+      display: grid; grid-template-columns: 240px 1fr; gap: 18px;
+    }
+    .sidebar {
+      border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: rgba(255,255,255,0.62);
+    }
+    .content {
+      border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: rgba(255,255,255,0.50);
+    }
+    .radar {
+      width: 100%; aspect-ratio: 1/1; display: grid; place-items: center; border-radius: 24px;
+      background: radial-gradient(circle at center, rgba(37,99,235,0.08) 0%, rgba(37,99,235,0.02) 54%, transparent 54%), repeating-radial-gradient(circle at center, rgba(37,99,235,0.10) 0 1px, transparent 1px 52px);
+      border: 1px solid var(--line);
+    }
+    .radar svg { width: 82%; height: 82%; }
+    .progress { height: 12px; border-radius: 999px; background: rgba(15,23,42,0.08); overflow: hidden; margin: 14px 0 10px; }
+    .progress > span { display: block; height: 100%; width: 64%; background: linear-gradient(90deg, #2563eb 0%, #0f766e 100%); }
+    .split-note {
+      margin-top: 14px; padding: 14px 16px; border-radius: 16px; background: rgba(15,23,42,0.05); color: var(--muted);
+    }
+    .footer-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
+    .footer-card p, .footer-card li { color: rgba(255,255,255,0.82); }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    @media (max-width: 1100px) {
+      .auth-grid, .team-grid, .measurement-grid, .dashboard-grid, .detail-grid, .grid-2, .grid-3, .grid-4, .overview-grid, .page-layout, .row {
+        grid-template-columns: 1fr;
+      }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">SD Platform Page Wireframes</div>
+      <nav class="nav">
+        <a href="#auth-pages">인증</a>
+        <a href="#team-pages">SD팀</a>
+        <a href="#measurement-page">측정</a>
+        <a href="#dashboard-page">대시보드</a>
+        <a href="#detail-page">팀 상세</a>
+        <a href="#notifications-page">알림</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Page-by-page visual reconstruction</div>
+        <h1>설계문서를 실제 서비스 페이지 단위로 재구성한 와이어프레임</h1>
+        <p class="lead">이 화면은 `SDPlatform.design.md`를 Next.js App Router 기준 페이지 단위로 풀어낸 시각적 문서입니다. 이후 구축 로드맵을 잡을 때, 어떤 페이지부터 만들고 어떤 컴포넌트를 공통화할지 판단하기 위한 기준면으로 쓰면 됩니다.</p>
+        <div class="card" style="margin-top:26px;">
+          <span class="badge blue">구성 범위</span>
+          <div class="overview-grid">
+            <div class="mini"><strong>/login</strong><p class="muted">로그인 진입</p></div>
+            <div class="mini"><strong>/signup</strong><p class="muted">회원가입과 역할 선택</p></div>
+            <div class="mini"><strong>/team</strong><p class="muted">팀 홈과 진행 현황</p></div>
+            <div class="mini"><strong>/dashboard</strong><p class="muted">관리자 대시보드</p></div>
+            <div class="mini"><strong>/notifications</strong><p class="muted">알림 모아보기</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="auth-pages">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Auth pages</div>
+          <h2>1. 인증 영역</h2>
+          <p class="muted">공개 라우트인 `/login`, `/signup`은 간결하지만 이후 팀 생성 흐름으로 자연스럽게 연결되어야 합니다.</p>
+        </div>
+        <div class="grid-2">
+          <div class="page-shell">
+            <div class="page-header"><div class="page-title">로그인 페이지</div><span class="route">/login</span></div>
+            <div class="auth-grid">
+              <div class="card soft">
+                <span class="badge blue">Public entry</span>
+                <h3>기존 계정으로 로그인</h3>
+                <div class="mini-list" style="margin-top:14px;">
+                  <div class="input">이메일 주소</div>
+                  <div class="input">비밀번호</div>
+                </div>
+                <div class="pillrow">
+                  <a class="btn" href="#">로그인</a>
+                  <a class="btn ghost" href="#">회원가입</a>
+                </div>
+              </div>
+              <div class="card">
+                <span class="badge teal">Side info</span>
+                <h3>플랫폼 소개 요약</h3>
+                <ul>
+                  <li>SD팀 셀프서비스</li>
+                  <li>자동 측정 및 Stage 분류</li>
+                  <li>관리자 승인과 증빙 레벨 조정</li>
+                  <li>알림과 CSV 내보내기</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-shell">
+            <div class="page-header"><div class="page-title">회원가입 페이지</div><span class="route">/signup</span></div>
+            <div class="auth-grid">
+              <div class="card soft">
+                <span class="badge blue">New account</span>
+                <h3>새 사용자 등록</h3>
+                <div class="mini-list" style="margin-top:14px;">
+                  <div class="input">이름</div>
+                  <div class="input">이메일</div>
+                  <div class="input">비밀번호</div>
+                  <div class="input">역할 선택, SD팀으로 가입</div>
+                </div>
+                <div class="pillrow">
+                  <a class="btn" href="#">가입 후 팀 프로필 작성</a>
+                </div>
+              </div>
+              <div class="card">
+                <span class="badge amber">Flow note</span>
+                <h3>가입 후 이동</h3>
+                <p class="muted">가입 직후 `/team/profile`로 이동하여 팀 프로필을 생성하고, 관리자의 승인을 기다리는 흐름이 연결됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team-pages">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Team workspace</div>
+          <h2>2. SD팀 전용 화면</h2>
+          <p class="muted">`/team` 계열은 팀이 스스로 입력하고 자신의 상태를 확인하는 핵심 영역입니다.</p>
+        </div>
+
+        <div class="page-shell" style="margin-bottom:20px;">
+          <div class="page-header"><div class="page-title">팀 홈 대시보드</div><span class="route">/team</span></div>
+          <div class="page-layout">
+            <aside class="sidebar">
+              <div class="menu-list">
+                <div class="menu-item active">내 팀 현황</div>
+                <div class="menu-item">활동 목록</div>
+                <div class="menu-item">측정 결과</div>
+                <div class="menu-item">팀 프로필</div>
+                <div class="menu-item">알림</div>
+              </div>
+            </aside>
+            <div class="content">
+              <div class="team-grid">
+                <div class="card">
+                  <span class="badge blue">Team summary</span>
+                  <h3>마을돌봄 네트워크</h3>
+                  <p class="muted">서울 은평구 · 주민 돌봄 연결 · 승인 완료</p>
+                  <div class="pillrow">
+                    <span class="pill">Stage S2</span>
+                    <span class="pill">총점 43</span>
+                    <span class="pill">최근 활동 3건</span>
+                  </div>
+                  <div class="split-note">현재 단계에서 공개 프로필 자격과 CSV 내보내기 기능이 언락되어 있습니다.</div>
+                </div>
+                <div class="card">
+                  <span class="badge teal">IncentiveProgress</span>
+                  <h3>성장 진행률</h3>
+                  <div class="progress"><span></span></div>
+                  <p class="muted">다음 목표, A4와 A6의 근거 강화, L2 이상 증빙 추가 확보</p>
+                  <ul>
+                    <li>현재 혜택, 보완 과제 리스트</li>
+                    <li>성장 진단 리포트</li>
+                    <li>공개 프로필 자격</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="grid-2" style="margin-top:18px;">
+                <div class="card soft">
+                  <span class="badge blue">최근 활동</span>
+                  <div class="timeline">
+                    <div class="timeline-item"><strong>주민 워크숍</strong><p class="muted">2026-04-09 · 참여 25명</p></div>
+                    <div class="timeline-item"><strong>협력기관 간담회</strong><p class="muted">2026-04-02 · 제안 협의</p></div>
+                  </div>
+                </div>
+                <div class="card soft">
+                  <span class="badge amber">Quick actions</span>
+                  <div class="pillrow">
+                    <a class="btn" href="#">새 활동 등록</a>
+                    <a class="btn ghost" href="#">측정 결과 보기</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="page-shell">
+            <div class="page-header"><div class="page-title">활동 목록</div><span class="route">/team/activities</span></div>
+            <div class="card">
+              <span class="badge blue">Activities list</span>
+              <div class="timeline">
+                <div class="timeline-item"><strong>주민 돌봄 워크숍</strong><p class="muted">A1, A3 관련 · 증빙 3건</p></div>
+                <div class="timeline-item"><strong>현장 인터뷰</strong><p class="muted">A1, A2 관련 · 증빙 2건</p></div>
+                <div class="timeline-item"><strong>협약 논의</strong><p class="muted">A5, A6 관련 · 증빙 1건</p></div>
+              </div>
+              <div class="pillrow" style="margin-top:14px;"><a class="btn" href="#">새 활동 등록</a></div>
+            </div>
+          </div>
+
+          <div class="page-shell">
+            <div class="page-header"><div class="page-title">팀 프로필 편집</div><span class="route">/team/profile</span></div>
+            <div class="card">
+              <span class="badge teal">Profile editor</span>
+              <div class="mini-list">
+                <div class="input">팀명</div>
+                <div class="input">지역</div>
+                <div class="input">대상집단</div>
+                <div class="input">핵심서비스</div>
+                <div class="input textarea">팀 소개</div>
+                <div class="input">인원수, 설립연도</div>
+              </div>
+              <div class="pillrow"><a class="btn" href="#">저장</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page-shell" style="margin-top:20px;">
+          <div class="page-header"><div class="page-title">활동 등록</div><span class="route">/team/activities/new</span></div>
+          <div class="team-grid">
+            <div class="card">
+              <span class="badge blue">ActivityForm</span>
+              <div class="mini-list">
+                <div class="input">활동 유형, 워크숍 / 설문 / 협약 / 운영 / 기타</div>
+                <div class="input">제목, 날짜, 장소, 참여자 수</div>
+                <div class="input textarea">활동 내용 설명</div>
+                <div class="input">산출물 태그, 결과보고서, 사진기록, 설문결과</div>
+                <div class="input">축 관련성 선택, A1 A2 A3 A4 A5 A6</div>
+                <div class="input">증빙 업로드 드래그앤드롭 영역</div>
+              </div>
+              <div class="pillrow" style="margin-top:14px;">
+                <a class="btn" href="#">저장 후 자동 측정</a>
+                <a class="btn ghost" href="#">임시저장</a>
+              </div>
+            </div>
+            <div class="card soft">
+              <span class="badge amber">Guide panel</span>
+              <h3>ActivityGuide + EvidenceLevelGuide</h3>
+              <div class="task-list">
+                <div class="task"><strong>A1 문제정의</strong><p class="muted">지역맥락, 문제구조화, 현장근거를 함께 적는 방식</p></div>
+                <div class="task"><strong>A3 현장운영</strong><p class="muted">반복 운영과 참여 기록이 있으면 유리</p></div>
+                <div class="task"><strong>증빙 레벨</strong><p class="muted">L0 자기서술, L1 현장기반, L2 공식문서, L3 외부검증</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="measurement-page">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Measurement page</div>
+          <h2>3. 측정 결과 페이지</h2>
+          <p class="muted">자동 계산 결과가 어떻게 사용자에게 보이는지, 그리고 어떤 보완 과제가 안내되는지 확인하기 위한 중심 페이지입니다.</p>
+        </div>
+        <div class="page-shell">
+          <div class="page-header"><div class="page-title">내 측정 결과</div><span class="route">/team/measurement</span></div>
+          <div class="measurement-grid">
+            <div class="card">
+              <span class="badge blue">AxisRadarChart</span>
+              <div class="radar">
+                <svg viewBox="0 0 300 300" fill="none" stroke="#2563eb" stroke-width="2">
+                  <polygon points="150,30 245,85 245,195 150,250 55,195 55,85" opacity="0.24"></polygon>
+                  <polygon points="150,60 220,100 220,180 150,220 80,180 80,100" opacity="0.18"></polygon>
+                  <polygon points="150,76 210,108 205,180 150,208 94,176 96,108" fill="rgba(37,99,235,0.20)"></polygon>
+                </svg>
+              </div>
+              <div class="pillrow">
+                <span class="pill">총점 43</span>
+                <span class="pill">Stage S2</span>
+                <span class="pill">최근 계산 14:22</span>
+              </div>
+            </div>
+            <div class="card">
+              <span class="badge teal">AxisScoreTable</span>
+              <div class="table">
+                <div class="row"><strong>A1 문제정의</strong><span>8</span><span class="muted">현장맥락과 문제 구조가 비교적 선명함</span></div>
+                <div class="row"><strong>A2 실험학습</strong><span>7</span><span class="muted">실험과 피드백 기록이 유지됨</span></div>
+                <div class="row"><strong>A3 현장운영</strong><span>8</span><span class="muted">반복 운영성과 실행력이 좋음</span></div>
+                <div class="row"><strong>A4 시민주체화</strong><span>6</span><span class="muted">참여 주체 구조 보완 필요</span></div>
+                <div class="row"><strong>A5 혼합지속</strong><span>7</span><span class="muted">자원 구조 설명 강화 필요</span></div>
+                <div class="row"><strong>A6 확장모델링</strong><span>7</span><span class="muted">매뉴얼과 패키지 자료 보강 필요</span></div>
+              </div>
+              <div class="card soft" style="margin-top:16px;">
+                <span class="badge amber">Improvement tasks</span>
+                <ul>
+                  <li>참여자 역할 구조와 공동주체성을 더 구조화</li>
+                  <li>패키지화 자료 또는 운영 매뉴얼 확보</li>
+                  <li>L2 이상 증빙 2건 이상 추가 확보</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard-page">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Admin dashboard</div>
+          <h2>4. 관리자 대시보드</h2>
+          <p class="muted">관리자의 실무는 승인, 전체 팀 파악, 이상 징후 발견, 내보내기까지 이어져야 하므로 대시보드는 충분히 밀도 있게 설계될 필요가 있습니다.</p>
+        </div>
+        <div class="page-shell">
+          <div class="page-header"><div class="page-title">관리자 홈</div><span class="route">/dashboard</span></div>
+          <div class="dashboard-grid">
+            <div class="card">
+              <span class="badge blue">Overview</span>
+              <div class="grid-4">
+                <div class="mini"><strong>38</strong><p class="muted">등록 팀</p></div>
+                <div class="mini"><strong>6</strong><p class="muted">승인 대기</p></div>
+                <div class="mini"><strong>41.2</strong><p class="muted">평균 점수</p></div>
+                <div class="mini"><strong>11</strong><p class="muted">S2 이상</p></div>
+              </div>
+              <div class="card soft" style="margin-top:18px;">
+                <span class="badge teal">전체 팀 테이블</span>
+                <div class="table">
+                  <div class="row"><strong>커피클레이</strong><span>S2</span><span class="muted">총점 45, 최근 업데이트 1일 전</span></div>
+                  <div class="row"><strong>동락점빵</strong><span>S1</span><span class="muted">총점 34, 현장기반 운영 강화</span></div>
+                  <div class="row"><strong>스튜디오어중간</strong><span>S1</span><span class="muted">총점 31, 서사 강점, 증빙 보완 필요</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <span class="badge amber">Pending approvals</span>
+              <div class="notice-list">
+                <div class="notice"><strong>청년순환랩</strong><p class="muted">서울 성북구, 순환자원 교육</p></div>
+                <div class="notice"><strong>골목돌봄부엌</strong><p class="muted">경기 부천, 공동부엌 운영</p></div>
+              </div>
+              <div class="pillrow">
+                <a class="btn" href="#">승인</a>
+                <a class="btn ghost" href="#">거절 사유 작성</a>
+              </div>
+              <div class="card soft" style="margin-top:16px;">
+                <span class="badge blue">Export</span>
+                <ul>
+                  <li>팀 요약 CSV</li>
+                  <li>활동 목록 CSV</li>
+                  <li>측정 이력 CSV</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="detail-page">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Admin team detail</div>
+          <h2>5. 관리자 팀 상세</h2>
+          <p class="muted">`/dashboard/teams/[id]`는 관리자 관점의 가장 중요한 판단 화면입니다. 활동 기록과 증빙 레벨 조정이 재계산과 곧바로 연결됩니다.</p>
+        </div>
+        <div class="page-shell">
+          <div class="page-header"><div class="page-title">팀 상세</div><span class="route">/dashboard/teams/[id]</span></div>
+          <div class="detail-grid">
+            <div class="card">
+              <span class="badge blue">Activity timeline</span>
+              <div class="timeline">
+                <div class="timeline-item"><strong>주민 워크숍</strong><p class="muted">2026-03-10, 참여 25명</p></div>
+                <div class="timeline-item"><strong>현장 인터뷰</strong><p class="muted">2026-03-24, 메모와 설문 결과 확보</p></div>
+                <div class="timeline-item"><strong>협력기관 간담회</strong><p class="muted">2026-04-07, MOU 논의</p></div>
+              </div>
+            </div>
+            <div class="card">
+              <span class="badge amber">Evidence controls</span>
+              <div class="table">
+                <div class="row"><strong>현장 사진 묶음</strong><span>L1</span><span class="muted">현장 기반 1차 증빙</span></div>
+                <div class="row"><strong>협약서 초안</strong><span>L2</span><span class="muted">기관 문서성 검토 중</span></div>
+                <div class="row"><strong>외부 기사 링크</strong><span>L1</span><span class="muted">보조 검증 근거</span></div>
+              </div>
+              <div class="pillrow" style="margin-top:14px;">
+                <span class="pill">L0</span>
+                <span class="pill">L1</span>
+                <span class="pill">L2</span>
+                <span class="pill">L3</span>
+              </div>
+              <div class="split-note">레벨 조정 시 scoring.action.ts가 다시 실행되고, 팀의 currentStage와 currentTotalScore가 갱신됩니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="notifications-page">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Notifications</div>
+          <h2>6. 알림 페이지</h2>
+          <p class="muted">알림은 보조 기능처럼 보이지만, 실제로는 승인, 점수 변경, Stage 변경, 증빙 조정이 사용자에게 전달되는 핵심 피드백 루프입니다.</p>
+        </div>
+        <div class="page-shell">
+          <div class="page-header"><div class="page-title">알림 목록</div><span class="route">/notifications</span></div>
+          <div class="notifications-grid">
+            <div class="card">
+              <span class="badge blue">Recent notifications</span>
+              <div class="notice-list">
+                <div class="notice"><strong>팀이 승인되었습니다</strong><p class="muted">이제 활동 등록과 증빙 업로드가 가능합니다.</p></div>
+                <div class="notice"><strong>점수 재계산이 완료되었습니다</strong><p class="muted">총점 41 → 43, 보완 과제 1건 감소</p></div>
+                <div class="notice"><strong>Stage가 변경되었습니다</strong><p class="muted">S1 → S2, 새 혜택이 언락되었습니다.</p></div>
+                <div class="notice"><strong>증빙 레벨이 조정되었습니다</strong><p class="muted">협약서 초안이 L2로 반영되었습니다.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="card footer-card">
+          <span class="badge blue" style="background:rgba(255,255,255,0.16);color:white;">Build note</span>
+          <h3>이제 이 와이어프레임을 기준으로 구축 로드맵을 설계할 수 있습니다.</h3>
+          <p>다음 단계에서는 각 페이지를 기준으로 공통 컴포넌트와 선행 개발 순서를 추출하면 됩니다. 특히 인증, 팀 프로필, 활동 등록, 측정 결과, 관리자 대시보드 순으로 잘라보면 Milestone 설계가 쉬워집니다.</p>
+          <ul>
+            <li>공통 컴포넌트, 레이아웃, 인증 가드 분리</li>
+            <li>팀 입력 플로우와 관리자 승인 플로우를 각각 폐쇄 루프로 설계</li>
+            <li>측정 엔진과 알림은 독립 모듈로 두고 화면과 연결</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

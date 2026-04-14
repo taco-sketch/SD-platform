@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD 공개 상세</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eff5ff;
+      --surface: rgba(255,255,255,0.88);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.96);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.22);
+      --line-strong: rgba(148,163,184,0.34);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.10);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-xl: 0 24px 72px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 42px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 26px rgba(15,23,42,0.06);
+      --max: 1320px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,250,252,0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.72);
+    }
+    .topbar-inner {
+      min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 12px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.84); color: var(--ink); }
+    section { padding: 34px 0 54px; }
+    .hero { padding: 54px 0 30px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(38px, 4.6vw, 64px); line-height: 1.04; letter-spacing: -0.06em; margin: 0 0 14px; }
+    h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.03em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 920px; font-size: 19px; color: var(--muted); }
+    .hero-grid, .summary-grid, .card-grid, .stats-grid, .impact-grid, .esg-grid, .support-grid, .resource-grid, .footer-grid { display: grid; gap: 18px; }
+    .hero-grid { grid-template-columns: 1.1fr 0.9fr; align-items: stretch; margin-top: 26px; }
+    .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .card-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .stats-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .impact-grid { grid-template-columns: 1fr 1fr; }
+    .esg-grid { grid-template-columns: 0.95fr 1.05fr; }
+    .support-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .resource-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1.05fr 0.95fr; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-lg); backdrop-filter: blur(16px);
+    }
+    .card.strong { background: var(--surface-strong); border-color: var(--line-strong); box-shadow: var(--shadow-md); }
+    .card.soft { background: var(--surface-soft); }
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      color: white; border-radius: var(--radius-xl); padding: 30px; box-shadow: var(--shadow-xl);
+    }
+    .hero-card p, .hero-card li { color: rgba(255,255,255,0.84); }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .muted { color: var(--muted); }
+    .tagrow, .pillrow, .meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .pill { padding: 8px 12px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 13px; font-weight: 700; }
+    .summary-item strong, .stat-item strong { display: block; font-size: 18px; margin-bottom: 6px; }
+    .stat-item strong { font-size: 32px; letter-spacing: -0.04em; }
+    .business-card { display: grid; gap: 12px; min-height: 100%; position: relative; overflow: hidden; }
+    .business-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+      opacity: 0.85;
+    }
+    .business-title { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; }
+    .business-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .list, .resource-list, .support-list { display: grid; gap: 10px; margin-top: 14px; }
+    .list-item, .resource-item, .support-item {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.64);
+    }
+    .list-item strong, .resource-item strong, .support-item strong { display:block; margin-bottom:4px; }
+    .footer-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white; border-radius: var(--radius-xl); padding: 26px; box-shadow: var(--shadow-xl);
+    }
+    .footer-card p, .footer-card li { color: rgba(255,255,255,0.84); }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    @media (max-width: 1100px) {
+      .hero-grid, .summary-grid, .card-grid, .stats-grid, .impact-grid, .esg-grid, .support-grid, .resource-grid, .footer-grid { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">SD 공개 상세</div>
+      <nav class="nav">
+        <a href="#hero">상단 요약</a>
+        <a href="#summary">정보 요약</a>
+        <a href="#business">대표 사업</a>
+        <a href="#stats">대표 성과</a>
+        <a href="#esg">ESG·SDGs</a>
+        <a href="#support">협력 포인트</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="wrap">
+        <div class="eyebrow">Detail</div>
+        <h1>SD 공개 상세</h1>
+        <p class="lead">이 화면은 소개문 중심 페이지가 아니라, 팀의 대표 사업, 주요 성과, 근거, 협력 포인트를 짧고 선명하게 압축해 보여주는 공개 프로필형 상세 페이지다.</p>
+
+        <div class="hero-grid">
+          <div class="hero-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Team profile header</span>
+            <h3>커피클레이</h3>
+            <p>커피박 재자원화와 시니어 생산 구조를 기반으로, 교육과 확장 프로젝트를 연결해 자원순환의 사업 구조를 만들어가는 팀.</p>
+            <div class="tagrow">
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">자원순환</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">시니어 생산</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">교육</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">운영형</span>
+            </div>
+            <div class="meta-row">
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">지역: 부산 (예시)</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">활동 시작: 2023 (예시)</span>
+            </div>
+          </div>
+
+          <div class="card soft strong">
+            <span class="badge blue">First-view goal</span>
+            <h3>첫 화면에서 바로 보여줄 것</h3>
+            <div class="list">
+              <div class="list-item"><strong>무엇을 하는 팀인가</strong><p class="muted">문제와 해결 방식이 한 문단 안에서 이해되어야 함</p></div>
+              <div class="list-item"><strong>대표 사업은 무엇인가</strong><p class="muted">사업 카드 3~4개로 구조가 보여야 함</p></div>
+              <div class="list-item"><strong>왜 협력할 수 있는가</strong><p class="muted">성과와 협력 포인트가 바로 보여야 함</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="summary">
+      <div class="wrap">
+        <div class="label">Quick understanding</div>
+        <h2>정보 요약</h2>
+        <div class="summary-grid" style="margin-top:18px;">
+          <div class="card summary-item strong"><span class="badge blue">문제</span><strong>버려지는 커피박과 지역 자원 순환의 단절</strong><p class="muted">카페에서 버려지는 자원을 다시 쓰는 구조가 부족하고, 이를 지역의 생산과 교육으로 연결하는 모델이 약함.</p></div>
+          <div class="card summary-item strong"><span class="badge teal">방식</span><strong>재자원화 + 시니어 생산 + 교육 확산</strong><p class="muted">수거, 가공, 생산, 체험, 교육, 확장 제안을 하나의 사업 구조로 연결함.</p></div>
+          <div class="card summary-item strong"><span class="badge amber">의미</span><strong>환경성과와 사회적 관계를 함께 만드는 모델</strong><p class="muted">단순 환경교육을 넘어, 생산 참여와 지역 협력을 함께 만드는 구조를 보여줌.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="business">
+      <div class="wrap">
+        <div class="label">Business cards</div>
+        <h2>대표 사업 / 활동</h2>
+        <p class="muted" style="margin-bottom:18px;">심화분석뷰의 사업 카드를 공개용 프로필 수준으로 압축한 구조.</p>
+        <div class="card-grid">
+          <div class="card business-card strong">
+            <span class="badge blue">사업 카드 1</span>
+            <div class="business-title">커피박 재자원화 운영</div>
+            <div class="business-meta"><span class="pill">상시 운영</span><span class="pill">환경 기반</span></div>
+            <p class="muted">커피박을 수거하고 다시 활용 가능한 재료로 전환하는 기본 운영축.</p>
+            <div class="list">
+              <div class="list-item"><strong>핵심 결과</strong><p class="muted">수거량, 참여 매장, 재료 전환 기반 축적</p></div>
+            </div>
+          </div>
+          <div class="card business-card strong">
+            <span class="badge teal">사업 카드 2</span>
+            <div class="business-title">시니어 생산 및 연대생산 구조</div>
+            <div class="business-meta"><span class="pill">상시 운영</span><span class="pill">생산 기반</span></div>
+            <p class="muted">시니어 생산 참여와 협력기관 공동 생산을 통해 일자리와 확산 기반을 만듦.</p>
+            <div class="list">
+              <div class="list-item"><strong>핵심 결과</strong><p class="muted">시니어 생산 참여, 협력기관 네트워크, 기술 전수 구조</p></div>
+            </div>
+          </div>
+          <div class="card business-card strong">
+            <span class="badge amber">사업 카드 3</span>
+            <div class="business-title">교육 프로그램 / 커피점토 체험·보급</div>
+            <div class="business-meta"><span class="pill">교육형</span><span class="pill">확산 기반</span></div>
+            <p class="muted">체험과 교육을 통해 자원순환 인식을 쉽게 전달하고 참여 기반을 넓힘.</p>
+            <div class="list">
+              <div class="list-item"><strong>핵심 결과</strong><p class="muted">교육 운영, 참여자 확대, 기관 재참여 기반 형성</p></div>
+            </div>
+          </div>
+          <div class="card business-card strong">
+            <span class="badge blue">사업 카드 4</span>
+            <div class="business-title">Coffee Re:Mind 기획 프로젝트</div>
+            <div class="business-meta"><span class="pill">기획 프로젝트</span><span class="pill">확장 검토</span></div>
+            <p class="muted">기존 운영모델을 바탕으로 브랜드와 확장 제안을 정리하는 후속 기획 축.</p>
+            <div class="list">
+              <div class="list-item"><strong>핵심 결과</strong><p class="muted">후속 협력과 투자 검토를 위한 제안 구조 정리</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats">
+      <div class="wrap">
+        <div class="label">Key outcomes</div>
+        <h2>대표 성과</h2>
+        <div class="stats-grid" style="margin-top:18px;">
+          <div class="card stat-item"><span class="badge blue">환경</span><strong>33톤</strong><p class="muted">연간 수거량, 자체 집계 기준</p></div>
+          <div class="card stat-item"><span class="badge teal">협력</span><strong>273곳</strong><p class="muted">참여 매장, 자체 집계 기준</p></div>
+          <div class="card stat-item"><span class="badge amber">생산</span><strong>70여 곳</strong><p class="muted">협력기관 네트워크, 자체 집계 기준</p></div>
+          <div class="card stat-item"><span class="badge blue">교육</span><strong>24회</strong><p class="muted">교육 운영 수 (예시)</p></div>
+        </div>
+        <div class="impact-grid" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge teal">정량 성과</span>
+            <div class="list">
+              <div class="list-item"><strong>운영 기반</strong><p class="muted">수거, 생산, 교육, 협력 축이 서로 연결되는 구조 형성</p></div>
+              <div class="list-item"><strong>확산 기반</strong><p class="muted">참여 매장과 협력기관을 통해 외부 확장 가능성 축적</p></div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge amber">정성 성과</span>
+            <div class="list">
+              <div class="list-item"><strong>시니어 역할 전환</strong><p class="muted">수혜 대상이 아니라 생산 파트너로 역할이 확장됨</p></div>
+              <div class="list-item"><strong>외부 이해도 증가</strong><p class="muted">환경성과와 사회적 의미를 함께 설명할 수 있는 구조가 형성됨</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="esg">
+      <div class="wrap">
+        <div class="label">External language</div>
+        <h2>ESG / SDGs 매칭</h2>
+        <div class="esg-grid" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge blue">ESG 관점</span>
+            <div class="list">
+              <div class="list-item"><strong>E</strong><p class="muted">커피박 재자원화와 폐기물 감축</p></div>
+              <div class="list-item"><strong>S</strong><p class="muted">시니어 생산 참여, 교육, 지역 협력</p></div>
+              <div class="list-item"><strong>G</strong><p class="muted">협력기관 관리와 사업 구조의 명확성</p></div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge teal">SDGs 관점</span>
+            <div class="list">
+              <div class="list-item"><strong>SDG 12</strong><p class="muted">책임감 있는 소비와 생산</p></div>
+              <div class="list-item"><strong>SDG 8</strong><p class="muted">양질의 일자리와 경제성장</p></div>
+              <div class="list-item"><strong>SDG 4 / 17</strong><p class="muted">교육, 파트너십 기반 확산</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="support">
+      <div class="wrap">
+        <div class="label">Collaboration</div>
+        <h2>협력 / 후원 / 투자 포인트</h2>
+        <p class="muted" style="margin-bottom:18px;">상세 페이지는 소개로 끝나지 않고, 어디에 어떻게 자원이 붙을 수 있는지를 보여줘야 한다.</p>
+        <div class="support-grid">
+          <div class="card support-item">
+            <span class="badge blue">후원</span>
+            <h3>교육 프로그램 확산</h3>
+            <p class="muted">체험 키트, 기관 연계 교육, 환경교육 프로그램 확장에 자원 연결 가능.</p>
+          </div>
+          <div class="card support-item">
+            <span class="badge teal">투자</span>
+            <h3>생산 구조 강화</h3>
+            <p class="muted">시니어 생산 구조와 연대생산 체계를 더 안정화하는 자원 연결 가능.</p>
+          </div>
+          <div class="card support-item">
+            <span class="badge amber">파트너십</span>
+            <h3>브랜드 / 확장 프로젝트 협력</h3>
+            <p class="muted">Coffee Re:Mind 같은 확장 기획 축에서 브랜드 협업과 공동 제안 가능.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="resource-grid">
+          <div class="card">
+            <span class="badge blue">Resources</span>
+            <h3>자료 / 링크</h3>
+            <div class="resource-list">
+              <div class="resource-item"><strong>공식 소개 자료</strong><p class="muted">팀 소개서, 브리프, 보도자료</p></div>
+              <div class="resource-item"><strong>관련 리포트</strong><p class="muted">심화분석뷰, 대표 성과 요약, 증빙 패키지</p></div>
+              <div class="resource-item"><strong>공식 링크</strong><p class="muted">홈페이지, SNS, 문의 채널</p></div>
+            </div>
+          </div>
+          <div class="footer-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Detail structure</span>
+            <h3>이 페이지에 필요한 핵심 기능</h3>
+            <p>팀의 정체성, 대표 사업, 주요 성과, ESG·SDGs 해석, 협력 포인트, 자료 링크를 압축해 보여주고, 필요하면 심화분석으로 더 깊게 들어가게 해야 한다.</p>
+            <ul>
+              <li>핵심 사업을 카드 단위로 이해 가능하게 제시</li>
+              <li>외부 파트너가 바로 읽을 수 있는 성과와 협력 언어 제공</li>
+              <li>자료와 후속 연결 경로까지 함께 배치</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

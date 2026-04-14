@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스튜디오어중간 심화분석뷰 v2</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef2ff;
+      --surface: rgba(255,255,255,0.86);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.94);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.24);
+      --line-strong: rgba(148,163,184,0.36);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.10);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --shadow-xl: 0 26px 80px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 40px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 24px rgba(15,23,42,0.05);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1240px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(248,250,252,0.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(255,255,255,0.72); }
+    .topbar-inner { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 10px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.82); color: var(--ink); }
+    section { padding: 34px 0 56px; }
+    .hero { padding: 74px 0 40px; }
+    .eyebrow { display: inline-block; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px; }
+    h1 { font-size: clamp(42px, 6vw, 74px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 16px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.22; letter-spacing: -0.03em; margin: 0 0 10px; }
+    h4 { font-size: 18px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 920px; font-size: 20px; color: var(--muted); }
+    .section-head { max-width: 920px; margin-bottom: 24px; }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .hero-panel, .footer-box { border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); }
+    .hero-panel { margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; }
+    .hero-panel .muted, .hero-panel p { color: rgba(255,255,255,0.82); }
+    .footer-box { padding: 32px; background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%); color: white; }
+    .footer-box p, .footer-box li { color: rgba(255,255,255,0.82); }
+    .grid-2, .grid-3, .grid-4, .hero-grid, .meta-grid, .gate-grid, .score-grid, .review-grid, .archive-grid, .detail-grid { display: grid; gap: 18px; }
+    .hero-grid { grid-template-columns: 1.35fr 0.65fr; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .meta-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .gate-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .score-grid { grid-template-columns: 1fr 1fr; }
+    .review-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .archive-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+    .card, .meta-item, .gate-card, .archive-card, .mini, .score-row, .review-box, .table-row, .section-box {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); backdrop-filter: blur(16px);
+    }
+    .card.strong, .archive-card.strong, .gate-card.strong, .review-box.strong, .table-row.strong { background: var(--surface-strong); border-color: var(--line-strong); }
+    .card, .gate-card, .archive-card, .mini, .review-box, .table-row, .section-box { padding: 22px; }
+    .meta-item { padding: 16px; }
+    .card.soft, .archive-card.soft { background: var(--surface-soft); }
+    .badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px; }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .muted { color: var(--muted); }
+    .pillrow, .tagrow { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { padding: 9px 11px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 12px; font-weight: 700; }
+    .hero-panel .pill { background: rgba(255,255,255,0.12); color: white; }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    .archive-card .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+    .archive-card { position: relative; overflow: hidden; }
+    .archive-card::after { content: ""; position: absolute; inset: auto 0 0 0; height: 3px; background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%); opacity: 0.85; }
+    .archive-title { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; }
+    .sub { color: var(--muted); margin-top: 4px; }
+    .status { min-width: 170px; border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: rgba(255,255,255,0.92); }
+    .timeline { display: grid; gap: 12px; }
+    .timeline-item { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: rgba(255,255,255,0.64); display: grid; grid-template-columns: 68px 1fr; gap: 12px; }
+    .step { font-weight: 900; color: var(--blue); }
+    .score-list { display: grid; gap: 10px; }
+    .score-row { display: grid; grid-template-columns: 100px 1fr 44px; gap: 12px; align-items: center; padding: 14px; background: rgba(255,255,255,0.64); }
+    .bar { height: 10px; border-radius: 999px; background: rgba(15,23,42,0.08); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #2563eb 0%, #0f766e 100%); }
+    .radar-wrap { display: flex; justify-content: center; margin-top: 16px; }
+    .radar-wrap svg { width: 100%; max-width: 430px; height: auto; }
+    .section-box h4 { margin-bottom: 10px; color: var(--ink); }
+    .table-list { display: grid; gap: 12px; }
+    .table-row { padding: 18px 20px; }
+    @media (max-width: 1080px) {
+      .hero-grid, .grid-2, .grid-3, .grid-4, .meta-grid, .gate-grid, .score-grid, .review-grid, .detail-grid, .timeline-item { grid-template-columns: 1fr; }
+      .archive-card .header { flex-direction: column; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">스튜디오어중간 심화분석뷰 v2</div>
+      <nav class="nav">
+        <a href="#meta">요약</a>
+        <a href="#logic">구조</a>
+        <a href="#archive">아카이브</a>
+        <a href="#gate">검토</a>
+        <a href="#connect">협력</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Deep analysis v2</div>
+        <h1>스튜디오어중간</h1>
+        <p class="lead">2030 젊은 투병인의 고립과 사회복귀 문제를 매거진, 인터뷰, 포럼, 연구, 회복 공간 구상으로 가시화하는 콘텐츠 기반 회복 플랫폼 실험 사례입니다.</p>
+        <div class="hero-panel">
+          <div class="hero-grid">
+            <div>
+              <div class="label" style="color:#bfdbfe;">Core reading</div>
+              <h3 style="font-size:34px; line-height:1.12; margin:0 0 12px; color:white;">문제 가시화와 학습 구조는 강하지만, 아직 운영·지속·거래 구조로는 덜 번역된 전환기 팀</h3>
+              <p>스튜디오어중간은 2030 젊은 투병인의 경험을 사회적 사각지대이자 공적 의제로 드러내는 데 매우 강합니다. 현재 병목은 문제정의 부족이 아니라, 콘텐츠와 담론의 힘을 반복 가능한 운영 단위와 자원 구조로 전환하는 수준에 있습니다.</p>
+              <div class="pillrow" style="margin-top:16px;">
+                <span class="pill">교육/캠페인 확산형</span>
+                <span class="pill">회복/연구 플랫폼형</span>
+              </div>
+            </div>
+            <div class="mini" style="background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.18); color:white;">
+              <div class="label" style="color:#bfdbfe;">Quick status</div>
+              <div class="pillrow">
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">Gate A: S1 발굴형</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">Gate B: Hold</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">Gate P: Hold</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">권장 리포트: 개념 브리프형</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="meta">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Information summary</div>
+          <h2>정보 요약</h2>
+          <p class="muted">정체성과 외부 번역 가능성을 함께 봅니다.</p>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-item"><strong>조직 형태</strong><p class="muted">개인사업자</p></div>
+          <div class="meta-item"><strong>활동 지역</strong><p class="muted">강원도 영월</p></div>
+          <div class="meta-item"><strong>핵심 분야</strong><p class="muted">콘텐츠 · 연구 · 회복</p></div>
+          <div class="meta-item"><strong>주요 활동 유형</strong><p class="muted">매거진 · 포럼 · 그룹인터뷰 · 공간 구상</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Strengths</div>
+          <h2>왜 주목해야 하는가</h2>
+        </div>
+        <div class="grid-3">
+          <div class="card"><h3>문제정의가 선명함</h3><p class="muted">2030 젊은 투병인의 고립과 사회복귀 문제를 분명한 언어로 제시합니다.</p></div>
+          <div class="card"><h3>학습 구조가 살아 있음</h3><p class="muted">매거진, 인터뷰, 포럼, 공동논문이 다음 시도로 이어집니다.</p></div>
+          <div class="card"><h3>운영형 모델로는 전환 중</h3><p class="muted">가치는 강하지만 반복 운영, 자원 구조, 패키지화는 더 필요합니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="logic">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Problem & solution</div>
+          <h2>문제와 해결 방식</h2>
+          <p class="muted">스튜디오어중간은 단순 매거진 제작팀이 아니라 공적 문제를 해석하는 플랫폼 실험으로 읽어야 합니다.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <span class="badge amber">핵심 문제 문장</span>
+            <p>2030 젊은 투병인은 건강한 청춘이라는 사회적 통념 속에서 경험이 보이지 않게 지워지고, 치료 이후에도 고립과 사회복귀의 어려움을 동시에 겪고 있습니다.</p>
+          </div>
+          <div class="card">
+            <span class="badge blue">핵심 해결 문장</span>
+            <p>스튜디오어중간은 매거진, 인터뷰, 포럼, 연구, 회복 공간 구상을 통해 젊은 투병인의 경험을 사회적으로 가시화하고, 고립의 시간을 회복과 연결의 시간으로 다시 해석하는 플랫폼을 실험합니다.</p>
+          </div>
+        </div>
+        <div class="timeline" style="margin-top:18px;">
+          <div class="timeline-item"><div class="step">STEP 1</div><div><strong>이야기 수집과 매거진 발행</strong><p class="muted">젊은 투병인의 서사를 사회적 언어로 바꿉니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 2</div><div><strong>포럼과 오픈스튜디오</strong><p class="muted">당사자, 연구자, 창작자가 만나는 장을 만듭니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 3</div><div><strong>연구와 학습 구조 축적</strong><p class="muted">공동논문과 그룹인터뷰로 해석 자산을 만듭니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 4</div><div><strong>회복 공간 플랫폼 구상</strong><p class="muted">영월 공간 자원과 연결해 다음 모델을 준비합니다.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="archive">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Project & activity archive</div>
+          <h2>사업/활동 아카이브</h2>
+          <p class="muted">실제 활동 축 기준 카드 구성입니다.</p>
+        </div>
+        <div class="archive-grid">
+          <div class="archive-card strong">
+            <div class="header"><div><span class="badge blue">활동 카드 1</span><div class="archive-title">매거진 &lt;병:맛&gt; 제작</div><div class="sub">젊은 투병인의 서사를 사회적으로 가시화하는 핵심 콘텐츠 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">완전 공개</span><span class="pill">L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>운영 정보</h4><ul><li>대상: 2030 젊은 투병인</li><li>진행 흐름: 1호~3호 제작</li><li>주요 자원: 인터뷰, 편집, 기획</li></ul></div>
+              <div class="section-box"><h4>활동 내용</h4><p class="muted">개인적 고통을 사회가 읽을 수 있는 서사로 바꾸는 매개입니다.</p></div>
+            </div>
+            <div class="detail-grid" style="margin-top:16px;"><div class="section-box"><h4>아웃풋</h4><ul><li>매거진 1~2호 발간</li><li>3호 제작 진행</li><li>서사 아카이브 구축</li></ul></div><div class="section-box"><h4>아웃컴</h4><ul><li>청년 투병인 존재 가시화</li><li>공적 의제로의 전환</li><li>해석 자산 축적</li></ul></div></div>
+          </div>
+          <div class="archive-card soft strong">
+            <div class="header"><div><span class="badge teal">활동 카드 2</span><div class="archive-title">오픈스튜디오 / 포럼 / 그룹인터뷰</div><div class="sub">담론과 공동 해석의 장을 만드는 학습·연결 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">요약 공개</span><span class="pill">L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>활동 내용</h4><p class="muted">당사자, 의료인, 연구자, 창작자가 함께 문제를 해석하는 공론장입니다.</p></div>
+              <div class="section-box"><h4>근거 포인트</h4><ul><li>오픈스튜디오 2회</li><li>그룹인터뷰 및 포럼 진행</li><li>연구 네트워크 연결</li></ul></div>
+            </div>
+          </div>
+          <div class="archive-card strong">
+            <div class="header"><div><span class="badge amber">활동 카드 3</span><div class="archive-title">공동논문·연구 축적</div><div class="sub">경험을 지식 자산으로 전환하는 연구 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">요약 공개</span><span class="pill">L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>의미</h4><p class="muted">콘텐츠를 넘어 해석 가능한 공적 지식으로 축적하는 흐름입니다.</p></div>
+              <div class="section-box"><h4>통합모델 연결</h4><ul><li>A2 실험학습</li><li>A6 확산전이 초기 기반</li><li>P 개념 브리프 보조</li></ul></div>
+            </div>
+          </div>
+          <div class="archive-card soft strong">
+            <div class="header"><div><span class="badge blue">활동 카드 4</span><div class="archive-title">영월 회복 공간 / 사회복귀 프로그램 구상</div><div class="sub">다음 단계 공간형 모델을 준비하는 기획 축</div></div><div class="status"><strong>공개 상태</strong><div class="pillrow" style="margin-top:8px;"><span class="pill">기획 진행</span><span class="pill">L0~L1</span></div></div></div>
+            <div class="detail-grid">
+              <div class="section-box"><h4>확장 가능성</h4><ul><li>회복형 레지던시</li><li>사회복귀 프로그램</li><li>커뮤니티 거점</li></ul></div>
+              <div class="section-box"><h4>현재 한계</h4><p class="muted">방향은 분명하지만 운영 구조와 자원 설계는 더 필요합니다.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gate">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Integrated review</div>
+          <h2>통합모델 검토</h2>
+        </div>
+        <div class="gate-grid">
+          <div class="gate-card strong"><span class="badge blue">성장 단계</span><h3>S1 발굴형</h3><p class="muted">문제정의와 학습 구조는 강하지만 운영·지속 구조는 아직 초기 단계라 발굴형으로 읽는 것이 적절합니다.</p></div>
+          <div class="gate-card strong"><span class="badge teal">협력 가능성</span><h3>중간</h3><p class="muted">사회적 의미는 크지만, 거래형 패키지나 반복 도입 구조는 아직 약합니다.</p></div>
+          <div class="gate-card strong"><span class="badge amber">리포트 전환 가능성</span><h3>보류</h3><p class="muted">개념 브리프는 가능하나 성과형 리포트로는 아직 이릅니다.</p></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge blue">항목별 검토의견</span>
+            <ul>
+              <li>A5, 지속 자원 구조와 최소 운영조건 설계 필요</li>
+              <li>A6, 전이 패키지와 적용 사례 보강 필요</li>
+              <li>A7, 운영 루틴과 역할 문서화 필요</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <span class="badge amber">현재 팀 상태 명명</span>
+            <p class="muted">교육/캠페인 확산형, 회복/연구 플랫폼형, 문제 가시화는 강하지만 운영 번역은 더 필요한 팀</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Score & review</div>
+          <h2>통합모델 항목별 검토와 시각화</h2>
+          <p class="muted">커피클레이 심화분석뷰 v2 기준에 맞춰 6개 핵심 항목은 레이더로, 각 항목 해석은 별도 검토 영역으로 함께 보여줍니다.</p>
+        </div>
+        <div class="score-grid">
+          <div class="card strong"><span class="badge blue">SD표준모델</span><h3>A게이트 6축 시각화</h3><p class="muted">A7 조직역량은 별도 수치로 보고, 육각형 도표는 핵심 6축(A1~A6)의 균형을 보여줍니다.</p><div class="radar-wrap"><svg viewBox="0 0 420 380" role="img" aria-label="스튜디오어중간 A게이트 레이더 차트"><g transform="translate(210,185)"><polygon points="0,-120 103.9,-60 103.9,60 0,120 -103.9,60 -103.9,-60" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-96 83.1,-48 83.1,48 0,96 -83.1,48 -83.1,-48" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-72 62.4,-36 62.4,36 0,72 -62.4,36 -62.4,-36" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-48 41.6,-24 41.6,24 0,48 -41.6,24 -41.6,-24" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><polygon points="0,-24 20.8,-12 20.8,12 0,24 -20.8,12 -20.8,-12" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/><line x1="0" y1="0" x2="0" y2="-120" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="103.9" y2="-60" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="103.9" y2="60" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="0" y2="120" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="-103.9" y2="60" stroke="rgba(17,24,39,0.12)"/><line x1="0" y1="0" x2="-103.9" y2="-60" stroke="rgba(17,24,39,0.12)"/><polygon points="0,-72 62.4,-36 52,30 0,60 -41.6,24 -52,-30" fill="rgba(37,99,235,0.18)" stroke="#2563eb" stroke-width="3"/><circle cx="0" cy="-72" r="4" fill="#2563eb"/><circle cx="62.4" cy="-36" r="4" fill="#2563eb"/><circle cx="52" cy="30" r="4" fill="#2563eb"/><circle cx="0" cy="60" r="4" fill="#2563eb"/><circle cx="-41.6" cy="24" r="4" fill="#2563eb"/><circle cx="-52" cy="-30" r="4" fill="#2563eb"/><text x="0" y="-138" text-anchor="middle" font-size="13" fill="#6b7280">A1 문제정의</text><text x="123" y="-66" text-anchor="start" font-size="13" fill="#6b7280">A2 실험학습</text><text x="123" y="72" text-anchor="start" font-size="13" fill="#6b7280">A3 현장운영</text><text x="0" y="144" text-anchor="middle" font-size="13" fill="#6b7280">A4 시민협력</text><text x="-123" y="72" text-anchor="end" font-size="13" fill="#6b7280">A5 지속자원</text><text x="-123" y="-66" text-anchor="end" font-size="13" fill="#6b7280">A6 확산전이</text></g></svg></div></div>
+          <div class="card strong"><span class="badge teal">항목별 검토</span><div class="table-list"><div class="table-row strong"><strong>🧭 문제정의, 6점</strong><p class="muted">2030 젊은 투병인의 고립과 사회복귀 문제를 매우 선명하게 제시합니다. 사각지대 문제를 공적 의제로 번역하는 힘이 분명합니다.</p></div><div class="table-row strong"><strong>🧪 실험학습, 6점</strong><p class="muted">매거진, 포럼, 그룹인터뷰, 연구 활동이 다음 시도와 해석 자산으로 이어집니다. 다만 변화 기록과 운영 피드백 문서는 더 정리될 필요가 있습니다.</p></div><div class="table-row strong"><strong>🏭 현장운영, 5점</strong><p class="muted">콘텐츠 제작과 포럼, 연구 활동은 실제로 이루어지고 있습니다. 다만 반복 운영 단위가 상품이나 서비스 수준으로 더 선명해지면 설득력이 커집니다.</p></div><div class="table-row strong"><strong>👥 시민협력, 5점</strong><p class="muted">당사자, 연구자, 창작자와의 연결 구조는 있습니다. 다만 참여자가 운영과 의사결정에 어떻게 영향을 주는지는 더 보여줄 필요가 있습니다.</p></div><div class="table-row strong"><strong>💰 지속자원, 4점</strong><p class="muted">활동 의지는 강하지만 후원, 프로그램, 공간 운영이 어떻게 지속될지에 대한 자원 구조는 아직 약합니다. 지금 가장 중요한 보완 축입니다.</p></div><div class="table-row strong"><strong>🚀 확산전이, 5점</strong><p class="muted">문제의식과 서사는 충분히 확장성이 있습니다. 다만 다른 공간과 프로그램에 적용 가능한 패키지 언어는 아직 더 필요합니다.</p></div><div class="table-row strong"><strong>🧩 조직역량, 4점</strong><p class="muted">회고와 팀워크는 보이지만, 운영 루틴, 역할 문서, 데이터 관리, 윤리 기준이 더 정리되면 팀의 신뢰도와 지속성이 높아질 수 있습니다.</p></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Interpretation</div>
+          <h2>종합 검토의견</h2>
+        </div>
+        <div class="review-grid">
+          <div class="review-box"><span class="badge blue">장점</span><h3>문제 가시화와 학습 구조가 강하게 보입니다</h3><p class="muted">스튜디오어중간은 보이지 않던 청년 투병 경험을 공적 문제로 드러내고, 그 경험을 매거진과 연구, 포럼을 통해 학습 자산으로 바꾸는 힘이 있습니다.</p></div>
+          <div class="review-box"><span class="badge amber">한계</span><h3>강한 문제의식을 운영형 구조로 번역하는 작업이 더 필요합니다</h3><p class="muted">활동 자체는 분명하지만, 반복 운영 단위, 자원 구조, 적용 패키지가 더 정리되면 신뢰도와 협력 가능성이 훨씬 높아집니다. 즉 약한 팀이라기보다 구조화가 더 필요한 팀입니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Strengths & tasks</div>
+          <h2>강점과 보완 과제</h2>
+        </div>
+        <div class="grid-2">
+          <div class="card"><h3>강점</h3><ul><li>2030 청년 투병 문제를 매우 선명하게 가시화함</li><li>매거진, 포럼, 연구가 이어지는 학습 구조가 있음</li><li>회복 공간 플랫폼으로 확장할 방향성이 뚜렷함</li></ul></div>
+          <div class="card"><h3>보완 과제</h3><ul><li>매거진·포럼·공간의 운영 단위 명료화</li><li>후원·프로그램·공간 기반 지속 자원 구조 설계</li><li>역할 분담, 회고, 운영 루틴 문서화</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Connection</div>
+          <h2>협력과 제안</h2>
+        </div>
+        <div class="table-list">
+          <div class="table-row"><strong>협력 파트너</strong><p class="muted">문화기획 조직, 연구기관, 청년·돌봄 관련 파트너, 회복 프로그램 운영 주체</p></div>
+          <div class="table-row"><strong>협력 방식</strong><p class="muted">개념 브리프, 회복 플랫폼 설명 자료, 포럼 협력, 청년 회복 실험 프로그램</p></div>
+          <div class="table-row"><strong>기대효과</strong><p class="muted">보이지 않던 청년 투병 경험을 공적 문제로 읽는 기반을 만들고, 회복과 사회복귀를 다루는 새로운 프로그램 언어를 설계할 수 있습니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="footer-box">
+          <div class="label" style="color:#93c5fd;">Final opinion</div>
+          <h2 style="margin-top:0; color:white;">스튜디오어중간과 협력하면 청년 투병과 회복 문제를 공적 프로그램 언어로 전환하는 기반을 만들 수 있습니다.</h2>
+          <p>스튜디오어중간의 강점은 개인의 고립된 경험을 사회가 함께 읽고 해석할 수 있는 구조로 바꾸는 데 있습니다. 그래서 스튜디오어중간과 협력하면 청년 투병과 회복, 사회복귀를 다루는 새로운 문화·연구·프로그램 모델을 설계할 수 있고, 정성적 경험을 공적 실험과 협력 구조로 번역하는 토대를 만들 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

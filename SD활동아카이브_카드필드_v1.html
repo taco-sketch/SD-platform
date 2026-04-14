@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD 활동 아카이브 카드 필드 v1</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef2ff;
+      --surface: rgba(255,255,255,0.88);
+      --surface-soft: rgba(255,255,255,0.72);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.24);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.1);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.1);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --shadow-xl: 0 24px 70px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 40px rgba(15,23,42,0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1320px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .hero { padding: 68px 0 34px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px;
+      background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(38px, 5vw, 68px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 16px; }
+    h2 { font-size: clamp(28px, 3.8vw, 44px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.03em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 960px; font-size: 20px; color: var(--muted); }
+    section { padding: 24px 0 48px; }
+    .section-head { max-width: 920px; margin-bottom: 24px; }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .grid-2, .grid-3, .grid-4, .layout, .meta-grid, .detail-grid, .sample-grid {
+      display: grid; gap: 18px;
+    }
+    .layout { grid-template-columns: 0.9fr 1.1fr; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .meta-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+    .sample-grid { grid-template-columns: 1fr; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px;
+      box-shadow: var(--shadow-lg); backdrop-filter: blur(16px);
+    }
+    .card.soft { background: var(--surface-soft); }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .muted { color: var(--muted); }
+    .field-list, .mini-list, .evidence-list, .tag-list { display: grid; gap: 10px; }
+    .field, .mini, .evidence, .sample-row {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.64);
+    }
+    .field strong, .mini strong, .evidence strong { display: block; margin-bottom: 4px; }
+    .pillrow, .tag-list { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      padding: 8px 10px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 12px; font-weight: 700;
+    }
+    .sample-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.80) 100%);
+      border: 1px solid rgba(148,163,184,0.22);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-xl);
+    }
+    .sample-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px;
+    }
+    .title { font-size: 28px; font-weight: 800; letter-spacing: -0.04em; }
+    .sub { color: var(--muted); margin-top: 6px; }
+    .status-box {
+      min-width: 180px; border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: rgba(255,255,255,0.72);
+    }
+    .meta-item {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.68);
+    }
+    .section-box {
+      margin-top: 18px; border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: rgba(255,255,255,0.60);
+    }
+    .section-box h4 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.02em; }
+    .matrix {
+      display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px;
+    }
+    .note {
+      margin-top: 16px; padding: 14px 16px; border-radius: 16px; background: rgba(15,23,42,0.05); color: var(--muted);
+    }
+    @media (max-width: 1080px) {
+      .layout, .grid-2, .grid-3, .grid-4, .meta-grid, .detail-grid, .matrix { grid-template-columns: 1fr; }
+      .sample-header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Activity archive card design v1</div>
+        <h1>SD 활동 아카이브 카드 필드 설계와 웹 시안</h1>
+        <p class="lead">이 시안은 심화 분석뷰 v2의 상시 업데이트 아카이브 영역에서 사용할 활동 카드 필드를 정의하고, 실제 웹에서 어떤 정보 밀도로 보이게 될지 확인하기 위한 디자인 파일입니다.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap layout">
+        <div class="card">
+          <div class="section-head">
+            <div class="label">Field design</div>
+            <h2>카드 필드 구조 v1</h2>
+            <p class="muted">카드는 단순 연혁이 아니라 활동 원장, 포트폴리오, 증빙 인덱스, 측정 근거 역할을 동시에 해야 합니다.</p>
+          </div>
+          <div class="field-list">
+            <div class="field"><strong>1. 사업/활동명</strong><span class="muted">활동을 식별하는 기본 제목</span></div>
+            <div class="field"><strong>2. 기간</strong><span class="muted">시작일, 종료일 또는 진행중 상태</span></div>
+            <div class="field"><strong>3. 대상 유형</strong><span class="muted">누구를 대상으로 한 활동인지, 주민, 시니어, 청년, 기관 등</span></div>
+            <div class="field"><strong>4. 활동 내용</strong><span class="muted">실제 수행한 내용 중심 설명</span></div>
+            <div class="field"><strong>5. 아웃풋</strong><span class="muted">회차 수, 참여자 수, 제작 수량, 배포 수량 등</span></div>
+            <div class="field"><strong>6. 아웃컴</strong><span class="muted">변화, 효과, 반응, 확산 결과 등</span></div>
+            <div class="field"><strong>7. 관련 증빙</strong><span class="muted">사진, 문서, 기사, 링크, 피드백 등</span></div>
+            <div class="field"><strong>8. 연결 통합모델 항목</strong><span class="muted">A축, Gate, ESG/SDGs 등과 연결</span></div>
+            <div class="field"><strong>9. 파트너 유형 또는 파트너명</strong><span class="muted">협력구조 파악용</span></div>
+            <div class="field"><strong>10. 공개 수준</strong><span class="muted">완전 공개, 요약 공개, 비공개</span></div>
+            <div class="field"><strong>11. 링크 / 파일 위치</strong><span class="muted">실제 아카이브와 연결되는 경로</span></div>
+            <div class="field"><strong>12. 최근 업데이트일</strong><span class="muted">갱신형 페이지 운영을 위한 기준 정보</span></div>
+          </div>
+        </div>
+
+        <div class="card soft">
+          <div class="section-head">
+            <div class="label">Design principles</div>
+            <h2>필드 설계 원칙</h2>
+          </div>
+          <div class="mini-list">
+            <div class="mini"><strong>활동 중심</strong><p class="muted">계획보다 실제 수행한 일 중심으로 기록</p></div>
+            <div class="mini"><strong>측정 연결</strong><p class="muted">각 카드가 어떤 통합모델 항목의 근거가 되는지 표시</p></div>
+            <div class="mini"><strong>증빙 연결</strong><p class="muted">증빙이 카드 안에서 바로 보이게 설계</p></div>
+            <div class="mini"><strong>포트폴리오화</strong><p class="muted">후속 제안, 펀딩, 협력에 활용 가능한 자료 구조</p></div>
+            <div class="mini"><strong>공개 수준 분리</strong><p class="muted">같은 카드라도 공개 가능한 정보와 내부 정보 분리</p></div>
+          </div>
+          <div class="note">현재 v1은 필드의 최소 공통셋을 제안한 상태입니다. 이후 실제 사례에 적용하며 줄일 항목과 늘릴 항목을 판정하면 됩니다.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Web sample</div>
+          <h2>웹에서 보이는 활동 아카이브 카드 샘플</h2>
+          <p class="muted">커피클레이 사례를 가정한 샘플 카드입니다. 실제 서비스에서는 이 카드가 심화 분석뷰의 상시 업데이트 아카이브 영역에 반복 배치됩니다.</p>
+        </div>
+
+        <div class="sample-grid">
+          <div class="sample-card">
+            <div class="sample-header">
+              <div>
+                <div class="badge blue">활동 아카이브 카드</div>
+                <div class="title">커피점토 교육 프로그램 운영</div>
+                <div class="sub">커피박을 교육 재료와 순환자원으로 전환하는 대표 활동</div>
+              </div>
+              <div class="status-box">
+                <strong>공개 수준</strong>
+                <div class="pillrow" style="margin-top:8px;">
+                  <span class="pill">완전 공개</span>
+                  <span class="pill">최근 업데이트 2026-04-13</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-item"><strong>기간</strong><p class="muted">2025.09 ~ 진행중</p></div>
+              <div class="meta-item"><strong>대상 유형</strong><p class="muted">교육 참여자, 학교, 기관, 지역 커뮤니티</p></div>
+              <div class="meta-item"><strong>파트너</strong><p class="muted">교육기관, 지역 협력기관</p></div>
+              <div class="meta-item"><strong>활동 유형</strong><p class="muted">교육 프로그램, 체험형 워크숍</p></div>
+            </div>
+
+            <div class="section-box">
+              <h4>활동 내용</h4>
+              <p class="muted">커피박을 활용한 점토를 기반으로 교육 프로그램을 운영하고, 참여자가 자원순환과 제작 과정을 직접 경험할 수 있도록 구성한다.</p>
+            </div>
+
+            <div class="detail-grid">
+              <div class="section-box">
+                <h4>아웃풋</h4>
+                <ul>
+                  <li>교육 프로그램 운영 회차</li>
+                  <li>참여자 수</li>
+                  <li>키트 및 재료 제공 수량</li>
+                </ul>
+              </div>
+              <div class="section-box">
+                <h4>아웃컴</h4>
+                <ul>
+                  <li>자원순환 인식 제고</li>
+                  <li>시니어 강사 역할 확대</li>
+                  <li>교육기관과 협력 경험 축적</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="detail-grid">
+              <div class="section-box">
+                <h4>관련 증빙</h4>
+                <div class="evidence-list">
+                  <div class="evidence"><strong>현장 사진</strong><span class="muted">L1, 프로그램 진행 현장</span></div>
+                  <div class="evidence"><strong>교육 자료 PDF</strong><span class="muted">L2, 프로그램 구성안</span></div>
+                  <div class="evidence"><strong>참여자 피드백</strong><span class="muted">L1, 후기와 반응 기록</span></div>
+                </div>
+              </div>
+              <div class="section-box">
+                <h4>연결 통합모델 항목</h4>
+                <div class="tag-list">
+                  <span class="pill">A2 실험학습</span>
+                  <span class="pill">A3 현장운영</span>
+                  <span class="pill">A4 시민협력</span>
+                  <span class="pill">A6 확산전이</span>
+                  <span class="pill">ESG-E</span>
+                  <span class="pill">SDG 12</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-box">
+              <h4>링크 / 파일 위치</h4>
+              <p class="muted">교육 자료 링크, 현장 사진 폴더, 기관 소개 페이지, 관련 기사 링크 등을 연결하는 영역</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

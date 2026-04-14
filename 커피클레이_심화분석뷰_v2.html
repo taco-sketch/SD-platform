@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>커피클레이 심화분석</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef2ff;
+      --surface: rgba(255,255,255,0.86);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.94);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.24);
+      --line-strong: rgba(148,163,184,0.36);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.1);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.1);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --shadow-xl: 0 26px 80px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 40px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 24px rgba(15,23,42,0.05);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1240px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,250,252,0.82); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.72);
+    }
+    .topbar-inner {
+      min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    }
+    .brand { font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 10px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.82); color: var(--ink); }
+    section { padding: 34px 0 56px; }
+    .hero { padding: 74px 0 40px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px;
+      background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(42px, 6vw, 74px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 16px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.22; letter-spacing: -0.03em; margin: 0 0 10px; }
+    h4 { font-size: 18px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 920px; font-size: 20px; color: var(--muted); }
+    .section-head { max-width: 920px; margin-bottom: 24px; }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .hero-panel, .footer-box {
+      border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);
+    }
+    .hero-panel {
+      margin-top: 30px; padding: 30px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white;
+    }
+    .hero-panel h3,
+    .hero-panel h4,
+    .hero-panel strong,
+    .hero-panel .sub {
+      color: white;
+    }
+    .hero-panel .muted {
+      color: rgba(255,255,255,0.82);
+    }
+    .footer-box {
+      padding: 32px; background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%); color: white;
+    }
+    .footer-box p, .footer-box li { color: rgba(255,255,255,0.82); }
+    .grid-2, .grid-3, .grid-4, .hero-grid, .meta-grid, .gate-grid, .score-grid, .review-grid, .archive-grid, .detail-grid {
+      display: grid; gap: 18px;
+    }
+    .hero-grid { grid-template-columns: 1.35fr 0.65fr; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .meta-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .gate-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .score-grid { grid-template-columns: 1fr 1fr; }
+    .review-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .archive-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+    .card, .meta-item, .gate-card, .archive-card, .mini, .score-row, .review-box, .table-row, .section-box {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md); backdrop-filter: blur(16px);
+    }
+    .card.strong, .archive-card.strong, .gate-card.strong, .review-box.strong, .table-row.strong {
+      background: var(--surface-strong); border-color: var(--line-strong);
+    }
+    .card strong,
+    .meta-item strong,
+    .gate-card strong,
+    .archive-card strong,
+    .mini strong,
+    .review-box strong,
+    .table-row strong,
+    .section-box strong {
+      color: var(--ink);
+    }
+    .card, .gate-card, .archive-card, .mini, .review-box, .table-row, .section-box { padding: 22px; }
+    .meta-item { padding: 16px; }
+    .card.soft, .archive-card.soft { background: var(--surface-soft); }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .muted { color: var(--muted); }
+    .pillrow, .tagrow { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      padding: 9px 11px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 12px; font-weight: 700;
+    }
+    .hero-panel .pill { background: rgba(255,255,255,0.12); color: white; }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    .archive-card .header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px;
+    }
+    .archive-card { position: relative; overflow: hidden; }
+    .archive-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+      opacity: 0.85;
+    }
+    .archive-title { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; }
+    .sub { color: var(--muted); margin-top: 4px; }
+    .status {
+      min-width: 170px; border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: rgba(255,255,255,0.92);
+    }
+    .status strong {
+      color: var(--ink);
+    }
+    .timeline { display: grid; gap: 12px; }
+    .timeline-item {
+      border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: rgba(255,255,255,0.64);
+      display: grid; grid-template-columns: 68px 1fr; gap: 12px;
+    }
+    .step { font-weight: 900; color: var(--blue); }
+    .score-list { display: grid; gap: 10px; }
+    .score-row {
+      display: grid; grid-template-columns: 100px 1fr 44px; gap: 12px; align-items: center; padding: 14px;
+      background: rgba(255,255,255,0.64);
+    }
+    .bar { height: 10px; border-radius: 999px; background: rgba(15,23,42,0.08); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #2563eb 0%, #0f766e 100%); }
+    .radar-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+    }
+    .radar-wrap svg {
+      width: 100%;
+      max-width: 430px;
+      height: auto;
+    }
+    .section-box h4 { margin-bottom: 10px; color: var(--ink); }
+    .table-list { display: grid; gap: 12px; }
+    .table-row { padding: 18px 20px; }
+    @media (max-width: 1080px) {
+      .hero-grid, .grid-2, .grid-3, .grid-4, .meta-grid, .gate-grid, .score-grid, .review-grid, .detail-grid, .timeline-item, .score-row { grid-template-columns: 1fr; }
+      .archive-card .header { flex-direction: column; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">커피클레이 심화분석</div>
+      <nav class="nav">
+        <a href="#meta">메타</a>
+        <a href="#logic">작동 구조</a>
+        <a href="#archive">아카이브</a>
+        <a href="#gate">판정</a>
+        <a href="#connect">협력 연결</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Deep analysis</div>
+        <h1>커피클레이</h1>
+        <p class="lead">커피박 재자원화, 시니어 일자리, 교육, 연대생산 구조를 결합해, 환경 문제를 실제 패키지와 협력 가능한 언어로 전환한 사례입니다.</p>
+
+        <div class="hero-panel">
+          <div class="hero-grid">
+            <div>
+              <div class="label" style="color:#bfdbfe;">Core reading</div>
+              <h3 style="font-size:34px; line-height:1.12; margin:0 0 12px;">커피박 자원순환을 시니어 일자리, 교육 프로그램, 연대생산 구조로 확장한 순환경제형 소셜디자이너 모델</h3>
+              <p style="color:rgba(255,255,255,0.82);">커피클레이는 커피박을 업사이클링하는 환경 활동에 머무르지 않고, 시니어 생산 참여, 교육 키트, 기계 보급, 전국 협력기관 연대생산까지 연결하면서 패키지화와 확산 가능성을 실제 운영 구조로 보여줍니다.</p>
+              <div class="pillrow" style="margin-top:16px;">
+                <span class="pill">패키지/확산 전환형</span>
+                <span class="pill">브리프형 + 성과형 + 협력 제안형</span>
+              </div>
+            </div>
+            <div class="mini" style="background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.18); color:white;">
+              <div class="label" style="color:#bfdbfe;">Quick status</div>
+              <div class="pillrow">
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">성장 단계: S2 운영형</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">협력 가능성: 높음</span>
+                <span class="pill" style="background:rgba(255,255,255,0.18); color:white;">리포트 전환 가능성: 조건부 높음</span>
+              </div>
+              <div class="section-box" style="margin-top:14px; background:rgba(15,23,42,0.28); border-color:rgba(255,255,255,0.16);">
+                <h4 style="color:white;">페이지 상태</h4>
+                <p style="color:rgba(255,255,255,0.90);">최초 등록일: 2026-04-13</p>
+                <p style="color:rgba(255,255,255,0.90);">최근 업데이트일: 2026-04-13</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="meta">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Information summary</div>
+          <h2>정보 요약</h2>
+          <p class="muted">기본 메타와 ESG-SDGs 매칭 정보를 분리해, 정체성과 활용 가능성을 함께 보여줍니다.</p>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-item"><strong>조직 형태</strong><p class="muted">주식회사</p></div>
+          <div class="meta-item"><strong>핵심 분야</strong><p class="muted">환경 · 교육 · 노동</p></div>
+          <div class="meta-item"><strong>주요 활동 유형</strong><p class="muted">업사이클링 · 교육 프로그램 · 연대생산 · 기술 전수</p></div>
+          <div class="meta-item"><strong>주요 읽기 키워드</strong><p class="muted">자원순환 · 시니어 참여 · 패키지화 · 확산 구조</p></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="card soft">
+            <span class="badge blue">ESG-SDGs 매칭</span>
+            <div class="tagrow">
+              <span class="pill">ESG-E 자원순환</span>
+              <span class="pill">ESG-S 시니어 일자리</span>
+              <span class="pill">ESG-S 교육</span>
+              <span class="pill">🌐 SDG 8 양질의 일자리와 경제성장</span>
+              <span class="pill">♻️ SDG 12 책임감 있는 소비와 생산</span>
+              <span class="pill">🤝 SDG 17 파트너십</span>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge amber">협력 가능 분야</span>
+            <div class="tagrow">
+              <span class="pill">기업 CSR</span>
+              <span class="pill">교육기관</span>
+              <span class="pill">지자체</span>
+              <span class="pill">중간지원조직</span>
+              <span class="pill">순환경제 파트너</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Strengths</div>
+          <h2>커피클레이의 강점</h2>
+          <p class="muted">커피클레이의 핵심은 환경 메시지 자체보다, 그것을 생산, 교육, 보급, 협력 구조로 조직했다는 점에 있습니다.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card"><h3>운영 구조가 명확함</h3><p class="muted">수거 → 점토화 → 제품화 → 교육 → 보급 → 연대생산까지 이어지는 구조가 또렷합니다.</p></div>
+          <div class="card"><h3>확산성이 높음</h3><p class="muted">전국 협력기관, 기계 보급, 기술 전수, 공동 생산 구조가 이미 작동하고 있습니다.</p></div>
+          <div class="card"><h3>거래 번역력이 높음</h3><p class="muted">환경 ESG, 시니어 일자리, 교육 프로그램, 키트 중심 패키지로 제안하기 좋습니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Problem & solution</div>
+          <h2>문제와 해결 방식</h2>
+          <p class="muted">커피박 폐기와 시니어 역할 축소라는 이중 문제를 자원순환과 연대생산 구조로 다시 엮는 팀입니다.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <span class="badge amber">핵심 문제 문장</span>
+            <p class="muted">초고령사회와 환경위기 속에서, 커피박과 같은 도시 폐기물은 버려지고 시니어는 수혜 대상으로만 남는 구조가 지속되고 있습니다.</p>
+          </div>
+          <div class="card">
+            <span class="badge blue">핵심 해결 문장</span>
+            <p class="muted">커피클레이는 커피박을 점토와 교육 재료, 제품, 지역 순환 자원으로 전환하고, 시니어를 제작자·강사·생산 파트너로 세우는 연대생산형 업사이클 모델을 운영합니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="logic">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Operational logic</div>
+          <h2>작동 구조 / 운영 로직</h2>
+          <p class="muted">커피클레이는 단일 프로젝트가 아니라, 소재 전환과 생산 구조, 교육 패키지, 네트워크 확산이 엮인 구조입니다.</p>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item"><div class="step">STEP 1</div><div><strong>커피박 수거와 자원 전환</strong><p class="muted">버려지던 커피박을 수거해 점토와 제품 재료로 전환합니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 2</div><div><strong>시니어 생산 참여</strong><p class="muted">시니어를 수혜자가 아니라 제작자, 작업자, 강사로 세우는 구조를 운영합니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 3</div><div><strong>교육·키트·도구 패키지화</strong><p class="muted">교육 프로그램, 키트, 기계 보급으로 외부 전환 가능한 단위를 만듭니다.</p></div></div>
+          <div class="timeline-item"><div class="step">STEP 4</div><div><strong>연대생산과 전국 확산</strong><p class="muted">전국 협력기관과 공동 생산하고, 기술 전수와 품질 관리로 확산 구조를 만듭니다.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="archive">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Project & activity archive</div>
+          <h2>사업/활동 아카이브</h2>
+          <p class="muted">이 영역은 커피클레이의 활동 원장, 포트폴리오, 증빙 인덱스, 측정 근거의 역할을 동시에 수행합니다. 먼저 전체 사업 목록을 표로 보고, 각 사업 카드의 세부 내용으로 내려가는 구조를 권장합니다.</p>
+        </div>
+        <div class="card" style="margin-bottom:18px; overflow:auto;">
+          <span class="badge blue">사업/활동 목록표</span>
+          <table style="width:100%; border-collapse:collapse; font-size:14px;">
+            <thead>
+              <tr style="text-align:left; color:var(--ink); border-bottom:1px solid var(--line);">
+                <th style="padding:10px;">사업/활동명</th>
+                <th style="padding:10px;">기간</th>
+                <th style="padding:10px;">예산</th>
+                <th style="padding:10px;">핵심 목적</th>
+                <th style="padding:10px;">주요 산출</th>
+                <th style="padding:10px;">연결 지표</th>
+                <th style="padding:10px;">투자/후원 포인트</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--line);">
+                <td style="padding:10px;"><a href="#activity-1" style="color:var(--blue); font-weight:700;">커피박 재자원화 운영</a></td>
+                <td style="padding:10px;">상시 운영</td>
+                <td style="padding:10px;">약 4,000만원 (예시)</td>
+                <td style="padding:10px;">버려지는 커피박을 자원으로 다시 쓰기</td>
+                <td style="padding:10px;">수거량, 참여 매장, 재료 전환량</td>
+                <td style="padding:10px;">ESG-E, SDG 12</td>
+                <td style="padding:10px;">자원순환 운영 후원</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--line);">
+                <td style="padding:10px;"><a href="#activity-2" style="color:var(--blue); font-weight:700;">시니어 생산 및 연대생산 구조</a></td>
+                <td style="padding:10px;">상시 운영</td>
+                <td style="padding:10px;">약 6,000만원 (예시)</td>
+                <td style="padding:10px;">시니어 생산 참여와 협력기관 연계 확대</td>
+                <td style="padding:10px;">참여 인원, 협력기관 수, 생산 건수</td>
+                <td style="padding:10px;">ESG-S, SDG 8, SDG 17</td>
+                <td style="padding:10px;">생산 네트워크 투자</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--line);">
+                <td style="padding:10px;"><a href="#activity-3" style="color:var(--blue); font-weight:700;">교육 프로그램 / 커피점토 체험·보급</a></td>
+                <td style="padding:10px;">2025.09 ~ 진행중 (예시)</td>
+                <td style="padding:10px;">약 3,000만원 (예시)</td>
+                <td style="padding:10px;">교육과 체험을 통한 인식 확산</td>
+                <td style="padding:10px;">회차, 참여자, 키트</td>
+                <td style="padding:10px;">ESG-E, ESG-S, SDG 4, SDG 12</td>
+                <td style="padding:10px;">교육 확산 후원</td>
+              </tr>
+              <tr>
+                <td style="padding:10px;"><a href="#activity-4" style="color:var(--blue); font-weight:700;">Coffee Re:Mind 기획 프로젝트</a></td>
+                <td style="padding:10px;">기획 및 일부 실행</td>
+                <td style="padding:10px;">별도 기획예산 (예시)</td>
+                <td style="padding:10px;">브랜딩, 확산, 후속 협력 구조 설계</td>
+                <td style="padding:10px;">제안안, 파일럿, 확장 자료</td>
+                <td style="padding:10px;">ESG-E, ESG-S, SDG 12, SDG 17</td>
+                <td style="padding:10px;">확장 프로젝트 투자</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="archive-grid">
+          <div class="archive-card strong" id="activity-1">
+            <div class="header">
+              <div>
+                <span class="badge blue">사업 카드 1</span>
+                <div class="archive-title">커피박 재자원화 운영</div>
+                <div class="sub">버려지는 커피박을 수거하고 다시 쓸 수 있는 재료로 바꾸는 기본 운영축</div>
+              </div>
+              <div class="status">
+                <strong>공개 상태</strong>
+                <div class="pillrow" style="margin-top:8px;">
+                  <span class="pill">완전 공개</span>
+                  <span class="pill">최근 업데이트 2026-04-13</span>
+                </div>
+              </div>
+            </div>
+            <div class="meta-grid">
+              <div class="meta-item"><strong>기간</strong><p class="muted">상시 운영</p></div>
+              <div class="meta-item"><strong>예산</strong><p class="muted">약 4,000만원 (예시)</p></div>
+              <div class="meta-item"><strong>대상 유형</strong><p class="muted">카페, 지역 파트너, 제작팀</p></div>
+              <div class="meta-item"><strong>파트너</strong><p class="muted">참여 매장, 수거 협력 파트너</p></div>
+            </div>
+            <div class="section-box" style="margin-top:16px; background: var(--surface-strong);"><h4>활동 내용</h4><p class="muted">커피박을 수거하고 가공해 점토와 제품 재료로 바꾸는 기본 운영입니다. 커피클레이의 다른 사업은 이 운영축 위에서 확장됩니다.</p></div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>아웃풋</h4><ul><li>연간 수거량 33톤, 자체 집계 기준</li><li>참여 매장 273곳, 자체 집계 기준</li><li>재료 전환 및 생산 기반 확보</li></ul></div>
+              <div class="section-box"><h4>아웃컴</h4><ul><li>도시 폐기물의 자원화 가능성 입증</li><li>후속 교육과 생산 사업의 기반 확보</li><li>환경성과를 설명할 수 있는 운영 근거 축적</li></ul></div>
+            </div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>관련 증빙</h4><ul><li>수거 운영 기록, L1</li><li>현장 사진, L1</li><li>매장 협력 자료, L1</li></ul></div>
+              <div class="section-box"><h4>연결 지표</h4><div class="tagrow"><span class="pill">ESG-E 자원순환</span><span class="pill">SDG 12 책임감 있는 소비와 생산</span></div></div>
+            </div>
+          </div>
+
+          <div class="archive-card soft strong" id="activity-2">
+            <div class="header">
+              <div>
+                <span class="badge teal">사업 카드 2</span>
+                <div class="archive-title">시니어 생산 및 연대생산 구조</div>
+                <div class="sub">시니어 생산 참여와 협력기관 공동 생산을 통해 일자리와 확산 구조를 만드는 핵심 축</div>
+              </div>
+              <div class="status">
+                <strong>공개 상태</strong>
+                <div class="pillrow" style="margin-top:8px;">
+                  <span class="pill">요약 공개</span>
+                  <span class="pill">최근 업데이트 2026-04-13</span>
+                </div>
+              </div>
+            </div>
+            <div class="meta-grid">
+              <div class="meta-item"><strong>기간</strong><p class="muted">상시 운영</p></div>
+              <div class="meta-item"><strong>예산</strong><p class="muted">약 6,000만원 (예시)</p></div>
+              <div class="meta-item"><strong>대상 유형</strong><p class="muted">시니어 작업장, 협력기관</p></div>
+              <div class="meta-item"><strong>파트너</strong><p class="muted">전국 협력기관 70여 곳</p></div>
+            </div>
+            <div class="section-box" style="margin-top:16px; background: var(--surface-strong);"><h4>활동 내용</h4><p class="muted">시니어를 제작자와 생산 파트너로 세우고, 협력기관과 공동 생산 구조를 만들어 기술 전수와 운영 지원을 이어갑니다.</p></div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>아웃풋</h4><ul><li>협력기관 70여 곳 연결, 자체 집계 기준</li><li>시니어 생산 참여 구조 운영</li><li>기술 전수 및 운영 지원 다수 진행</li></ul></div>
+              <div class="section-box"><h4>아웃컴</h4><ul><li>시니어 역할이 수혜자에서 생산 파트너로 확장</li><li>지역별 운영 네트워크 형성</li><li>지속 가능한 생산 구조 기반 확대</li></ul></div>
+            </div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>관련 증빙</h4><ul><li>협력기관 목록, L1</li><li>생산 기록, L1</li><li>기술 전수 자료, L1</li></ul></div>
+              <div class="section-box"><h4>연결 지표</h4><div class="tagrow"><span class="pill">ESG-S 일자리</span><span class="pill">SDG 8 양질의 일자리와 경제성장</span><span class="pill">SDG 17 파트너십</span></div></div>
+            </div>
+          </div>
+
+          <div class="archive-card strong" id="activity-3">
+            <div class="header">
+              <div>
+                <span class="badge amber">사업 카드 3</span>
+                <div class="archive-title">교육 프로그램 / 커피점토 체험·보급</div>
+                <div class="sub">커피점토 체험과 교육을 통해 자원순환 인식을 넓히고 참여를 확장하는 사업</div>
+              </div>
+              <div class="status">
+                <strong>공개 상태</strong>
+                <div class="pillrow" style="margin-top:8px;">
+                  <span class="pill">완전 공개</span>
+                  <span class="pill">최근 업데이트 2026-04-13</span>
+                </div>
+              </div>
+            </div>
+            <div class="meta-grid">
+              <div class="meta-item"><strong>기간</strong><p class="muted">2025.09 ~ 진행중</p></div>
+              <div class="meta-item"><strong>예산</strong><p class="muted">약 3,000만원 (예시)</p></div>
+              <div class="meta-item"><strong>대상 유형</strong><p class="muted">교육 참여자, 학교, 기관, 커뮤니티</p></div>
+              <div class="meta-item"><strong>파트너</strong><p class="muted">교육기관, 지역 협력기관</p></div>
+            </div>
+            <div class="section-box" style="margin-top:16px; background: var(--surface-strong);"><h4>활동 내용</h4><p class="muted">커피점토 체험, 교육 키트, 워크숍을 통해 자원순환을 쉽게 이해하게 하고, 커피클레이 모델을 체험 가능한 형태로 전달합니다.</p></div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>아웃풋</h4><ul><li>교육 24회 운영, 예시</li><li>참여자 420명, 예시</li><li>교육 키트 380개 제공, 예시</li></ul></div>
+              <div class="section-box"><h4>아웃컴</h4><ul><li>환경 인식 변화 촉진</li><li>교육기관 재참여 확대</li><li>브랜드와 활동의 외부 이해도 증가</li></ul></div>
+            </div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>관련 증빙</h4><ul><li>현장 사진, L1</li><li>교육 자료 PDF, L2</li><li>참여자 피드백, L1</li></ul></div>
+              <div class="section-box"><h4>연결 지표</h4><div class="tagrow"><span class="pill">ESG-E 자원순환</span><span class="pill">ESG-S 교육</span><span class="pill">SDG 4 양질의 교육</span><span class="pill">SDG 12 책임감 있는 소비와 생산</span></div></div>
+            </div>
+          </div>
+
+          <div class="archive-card soft strong" id="activity-4">
+            <div class="header">
+              <div>
+                <span class="badge blue">사업 카드 4</span>
+                <div class="archive-title">Coffee Re:Mind 기획 프로젝트</div>
+                <div class="sub">기존 운영모델을 바탕으로 브랜드, 제안, 확산 가능성을 키우는 후속 기획 축</div>
+              </div>
+              <div class="status">
+                <strong>공개 상태</strong>
+                <div class="pillrow" style="margin-top:8px;">
+                  <span class="pill">요약 공개</span>
+                  <span class="pill">최근 업데이트 2026-04-13</span>
+                </div>
+              </div>
+            </div>
+            <div class="meta-grid">
+              <div class="meta-item"><strong>기간</strong><p class="muted">기획 및 일부 실행</p></div>
+              <div class="meta-item"><strong>예산</strong><p class="muted">별도 기획예산 (예시)</p></div>
+              <div class="meta-item"><strong>대상 유형</strong><p class="muted">후원자, 투자자, 확산 파트너</p></div>
+              <div class="meta-item"><strong>파트너</strong><p class="muted">브랜드 협력 파트너, 확산 파트너</p></div>
+            </div>
+            <div class="section-box" style="margin-top:16px; background: var(--surface-strong);"><h4>활동 내용</h4><p class="muted">기존 운영모델을 더 넓은 파트너와 연결하고, 브랜드와 제안 구조를 정리해 후속 협력과 투자 가능성을 키우는 확장 프로젝트입니다.</p></div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>아웃풋</h4><ul><li>확장 제안안 정리</li><li>브랜드 및 협력 자료 제작</li><li>파일럿 검토 자료 축적</li></ul></div>
+              <div class="section-box"><h4>아웃컴</h4><ul><li>후속 투자/후원 검토 가능성 확대</li><li>사업 구조의 외부 전달력 강화</li><li>확산 프로젝트 기획 기반 확보</li></ul></div>
+            </div>
+            <div class="detail-grid" style="margin-top:16px;">
+              <div class="section-box"><h4>관련 증빙</h4><ul><li>제안서 초안, L1</li><li>브랜드 자료, L1</li><li>파일럿 기획 문서, L1</li></ul></div>
+              <div class="section-box"><h4>연결 지표</h4><div class="tagrow"><span class="pill">ESG-E 자원순환</span><span class="pill">ESG-S 지역확산</span><span class="pill">SDG 12 책임감 있는 소비와 생산</span><span class="pill">SDG 17 파트너십</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Representative results</div>
+          <h2>대표 성과</h2>
+          <p class="muted">활동 카드별 증빙과 별도로, 이 사례 전체를 읽게 만드는 대표 성과와 근거를 묶어 보여줍니다.</p>
+        </div>
+        <div class="grid-4">
+          <div class="card soft"><h3>전국 70여 개 협력기관</h3><p class="muted">연대생산과 기술 전수 기반</p></div>
+          <div class="card soft"><h3>커피박 업사이클링 운영</h3><p class="muted">수거·점토화·제품화 구조 존재</p></div>
+          <div class="card soft"><h3>시니어 작업장 운영</h3><p class="muted">제작 참여와 역할 전환 발생</p></div>
+          <div class="card soft"><h3>기계·교육·보급 구조</h3><p class="muted">확산 가능한 패키지와 실행 단위 확인</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gate">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Integrated model review</div>
+          <h2>통합모델 검토</h2>
+          <p class="muted">커피클레이는 운영 구조와 확산 구조가 함께 있는 팀입니다. 따라서 A뿐 아니라 B와 P에서도 높은 판정을 받는 사례로 읽힙니다.</p>
+        </div>
+        <div class="gate-grid">
+          <div class="gate-card strong"><span class="badge blue">성장 단계</span><h3>S2 운영형</h3><p class="muted">반복 운영, 혼합 재원, 연대생산 구조, 확산 가능성이 실제 운영 수준으로 보입니다.</p></div>
+          <div class="gate-card strong"><span class="badge teal">협력 가능성</span><h3>높음</h3><p class="muted">구매, CSR, 교육, 자원순환, 시니어 일자리 언어로 설명할 수 있는 구조가 명확합니다.</p></div>
+          <div class="gate-card strong"><span class="badge amber">리포트 전환 가능성</span><h3>조건부 높음</h3><p class="muted">브리프형과 성과형 리포트 전환이 가능하지만 KPI 인덱스와 정리된 증빙 패키지는 더 보완 여지가 있습니다.</p></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge blue">항목별 검토의견</span>
+            <ul>
+              <li>A1, 지역성·대상성 서술은 더 보강 필요</li>
+              <li>A2, 버전업 기록과 개선 로그 추가 필요</li>
+              <li>A7, 운영·윤리·데이터 관리 문서 보강 필요</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <span class="badge amber">현재 팀 상태 명명</span>
+            <p class="muted">패키지/확산 전환형, 거래 번역 가능형, 운영 구조가 이미 형성된 팀</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Score & review</div>
+          <h2>통합모델 항목별 검토와 시각화</h2>
+          <p class="muted">coffeeclay-deck 기준의 그래프/표 양식을 따라 6개 핵심 항목은 레이더로, 각 항목 점수는 별도 표로 함께 보여줍니다.</p>
+        </div>
+        <div class="score-grid">
+          <div class="card strong">
+            <span class="badge blue">SD표준모델</span>
+            <h3>A게이트 6축 시각화</h3>
+            <p class="muted">A7 조직역량은 별도 수치로 보고, 육각형 도표는 핵심 6축(A1~A6)의 균형을 보여줍니다.</p>
+            <div class="radar-wrap">
+              <svg viewBox="0 0 420 380" role="img" aria-label="커피클레이 A게이트 레이더 차트">
+                <defs>
+                  <linearGradient id="coffeeFillDeckInline" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="rgba(37,99,235,0.30)" />
+                    <stop offset="100%" stop-color="rgba(37,99,235,0.08)" />
+                  </linearGradient>
+                </defs>
+                <g transform="translate(210,185)">
+                  <polygon points="0,-120 103.9,-60 103.9,60 0,120 -103.9,60 -103.9,-60" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/>
+                  <polygon points="0,-96 83.1,-48 83.1,48 0,96 -83.1,48 -83.1,-48" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/>
+                  <polygon points="0,-72 62.4,-36 62.4,36 0,72 -62.4,36 -62.4,-36" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/>
+                  <polygon points="0,-48 41.6,-24 41.6,24 0,48 -41.6,24 -41.6,-24" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/>
+                  <polygon points="0,-24 20.8,-12 20.8,12 0,24 -20.8,12 -20.8,-12" fill="none" stroke="rgba(17,24,39,0.08)" stroke-width="1.5"/>
+                  <line x1="0" y1="0" x2="0" y2="-120" stroke="rgba(17,24,39,0.12)" />
+                  <line x1="0" y1="0" x2="103.9" y2="-60" stroke="rgba(17,24,39,0.12)" />
+                  <line x1="0" y1="0" x2="103.9" y2="60" stroke="rgba(17,24,39,0.12)" />
+                  <line x1="0" y1="0" x2="0" y2="120" stroke="rgba(17,24,39,0.12)" />
+                  <line x1="0" y1="0" x2="-103.9" y2="60" stroke="rgba(17,24,39,0.12)" />
+                  <line x1="0" y1="0" x2="-103.9" y2="-60" stroke="rgba(17,24,39,0.12)" />
+                  <polygon points="0,-60 52,-30 72.7,42 0,72 -72.7,42 -83.1,-48" fill="url(#coffeeFillDeckInline)" stroke="#2563eb" stroke-width="3"/>
+                  <circle cx="0" cy="-60" r="4" fill="#2563eb"/>
+                  <circle cx="52" cy="-30" r="4" fill="#2563eb"/>
+                  <circle cx="72.7" cy="42" r="4" fill="#2563eb"/>
+                  <circle cx="0" cy="72" r="4" fill="#2563eb"/>
+                  <circle cx="-72.7" cy="42" r="4" fill="#2563eb"/>
+                  <circle cx="-83.1" cy="-48" r="4" fill="#2563eb"/>
+                  <text x="0" y="-138" text-anchor="middle" font-size="13" fill="#6b7280">A1 문제정의</text>
+                  <text x="123" y="-66" text-anchor="start" font-size="13" fill="#6b7280">A2 실험학습</text>
+                  <text x="123" y="72" text-anchor="start" font-size="13" fill="#6b7280">A3 현장운영</text>
+                  <text x="0" y="144" text-anchor="middle" font-size="13" fill="#6b7280">A4 시민협력</text>
+                  <text x="-123" y="72" text-anchor="end" font-size="13" fill="#6b7280">A5 지속자원</text>
+                  <text x="-123" y="-66" text-anchor="end" font-size="13" fill="#6b7280">A6 확산전이</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="card strong">
+            <span class="badge teal">항목별 검토</span>
+            <div class="table-list">
+              <div class="table-row strong"><strong>🧭 문제정의, 5점</strong><p class="muted">환경 문제와 시니어 역할 전환을 함께 다루는 방향은 분명합니다. 다만 어느 지역과 어떤 대상에게 특히 중요한지 더 또렷하게 정리하면 더 설득력이 커집니다.</p></div>
+              <div class="table-row strong"><strong>🧪 실험학습, 5점</strong><p class="muted">교육과 생산, 확산을 계속 시도해온 흐름은 좋습니다. 앞으로는 무엇을 바꾸고 개선했는지 기록이 더 필요합니다.</p></div>
+              <div class="table-row strong"><strong>🏭 현장운영, 7점</strong><p class="muted">실제로 돌아가는 활동 구조가 잘 보입니다. 단발 행사가 아니라 운영되고 있다는 점이 큰 강점입니다.</p></div>
+              <div class="table-row strong"><strong>👥 시민협력, 6점</strong><p class="muted">시니어와 협력기관이 참여하는 구조가 있습니다. 다만 참여자가 어떤 역할을 맡고 어떻게 커졌는지를 더 보여주면 좋습니다.</p></div>
+              <div class="table-row strong"><strong>💰 지속자원, 7점</strong><p class="muted">사업이 이어질 수 있는 기반이 어느 정도 보입니다. 다만 수익, 후원, 협력 자원이 어떻게 섞여 유지되는지 더 정리할 필요가 있습니다.</p></div>
+              <div class="table-row strong"><strong>🚀 확산전이, 8점</strong><p class="muted">기계 보급과 패키지 구조 덕분에 다른 지역으로 퍼질 가능성이 높습니다. 이 점이 커피클레이의 가장 큰 강점 중 하나입니다.</p></div>
+              <div class="table-row strong"><strong>🧩 조직역량, 6점</strong><p class="muted">회의 구조, 운영 문서, 품질 관리, 데이터 관리, 윤리 기준, 파트너 대응 체계처럼 팀이 오래 안정적으로 일할 수 있는 힘을 보는 기준입니다. 커피클레이는 실제 운영은 강하지만, 이를 문서와 관리 체계로 더 정리하면 더 강해질 수 있습니다.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Interpretation</div>
+          <h2>종합 검토의견</h2>
+        </div>
+        <div class="review-grid">
+          <div class="review-box"><span class="badge blue">장점</span><h3>실제로 굴러가고, 다른 곳으로 퍼질 수 있는 구조가 보입니다</h3><p class="muted">커피클레이는 좋은 뜻만 있는 팀이 아니라, 교육, 생산, 확산이 실제로 돌아가고 있는 팀입니다. 그래서 협력기관이나 후원자가 봐도 ‘이건 실제로 함께 해볼 수 있겠다’는 판단을 할 수 있습니다.</p></div>
+          <div class="review-box"><span class="badge amber">한계</span><h3>강한 활동을 더 쉽게 믿게 만드는 정리 작업이 아직 필요합니다</h3><p class="muted">활동 자체는 강하지만, 지역성과 대상성 설명, 개선 기록, 운영 문서가 더 잘 정리되면 신뢰도와 확장 가능성이 더 높아집니다. 즉, 약한 팀이라기보다 정리가 더 필요합니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Strengths & tasks</div>
+          <h2>강점과 보완 과제</h2>
+        </div>
+        <div class="grid-2">
+          <div class="card"><h3>강점</h3><ul><li>환경-노동-교육-시니어 참여를 하나의 모델로 결합</li><li>기술 전수와 공동 생산을 통한 확산 구조 보유</li><li>거래 가능한 단위와 제안 가능한 패키지성이 높음</li></ul></div>
+          <div class="card"><h3>보완 과제</h3><ul><li>지역성·대상성 문장을 더 정교하게 구조화</li><li>개선 로그와 버전업 기록 정리</li><li>품질·일정·리스크 관리 문서 보강</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="label">Connection</div>
+          <h2>협력과 제안</h2>
+          <p class="muted">이 페이지는 단순 설명 페이지가 아니라, 어떤 사업과 활동에 투자, 후원, 협력할 수 있는지 판단하는 구조를 목표로 합니다.</p>
+        </div>
+        <div class="table-list">
+          <div class="table-row"><strong>활동의 의미</strong><p class="muted">커피클레이는 버려지는 자원을 다시 쓰는 일에서 끝나지 않고, 시니어의 역할, 교육 기회, 지역 협력을 함께 키우는 활동입니다.</p></div>
+          <div class="table-row"><strong>연결 파트너</strong><p class="muted">기업 CSR팀, ESG 담당 조직, 교육기관, 지자체, 중간지원조직, 순환경제 파트너가 함께할 수 있습니다.</p></div>
+          <div class="table-row"><strong>협력 방식</strong><p class="muted">교육 프로그램 공동 운영, ESG 연계 캠페인, 확산 파트너 참여, 설비 지원, 지역 네트워크 연계 같은 방식으로 함께할 수 있습니다.</p></div>
+          <div class="table-row"><strong>투자/후원 시 기대효과</strong><p class="muted">환경성과를 눈에 보이게 만들 수 있고, 교육 프로그램을 함께 운영할 수 있으며, 지역과 기관을 연결하는 좋은 사례를 만들 수 있습니다.</p></div>
+          <div class="table-row"><strong>사업/활동 결과물</strong><p class="muted">구매 제안 브리프, ESG 성과 요약표, 협력기관 사례 인덱스, 투자/후원 제안서 초안 등으로 바로 정리할 수 있습니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="footer-box">
+          <div class="label" style="color:#93c5fd;">Final opinion</div>
+          <h2 style="margin-top:0; color:white;">커피클레이와 협력하면 환경성과, 교육 효과, 지역 확산 가능성을 한 번에 채울 수 있습니다.</h2>
+          <p>커피클레이의 강점은 버려지는 자원을 다시 쓰는 데서 끝나지 않고, 교육 프로그램, 시니어 역할 확대, 협력기관 네트워크, 확산 가능한 운영 구조까지 함께 갖추고 있다는 점입니다. 그래서 커피클레이와 협력하면 눈에 보이는 환경성과를 만들 수 있고, 교육과 사회적 가치 활동을 함께 설계할 수 있으며, 지역과 기관을 연결하는 좋은 사례를 빠르게 만들 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

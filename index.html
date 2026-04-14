@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD 플랫폼 메인</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg2: #eef4ff;
+      --surface: rgba(255,255,255,0.88);
+      --surface-soft: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.96);
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148,163,184,0.22);
+      --line-strong: rgba(148,163,184,0.34);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.10);
+      --teal: #0f766e;
+      --teal-soft: rgba(15,118,110,0.10);
+      --amber: #d97706;
+      --amber-soft: rgba(217,119,6,0.12);
+      --green: #16a34a;
+      --green-soft: rgba(22,163,74,0.10);
+      --purple: #7c3aed;
+      --purple-soft: rgba(124,58,237,0.10);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-xl: 0 24px 72px rgba(15,23,42,0.10);
+      --shadow-lg: 0 18px 42px rgba(15,23,42,0.08);
+      --shadow-md: 0 10px 26px rgba(15,23,42,0.06);
+      --max: 1320px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Inter", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,250,252,0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.72);
+    }
+    .topbar-inner {
+      min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .nav a { padding: 8px 12px; border-radius: 999px; }
+    .nav a:hover { background: rgba(255,255,255,0.84); color: var(--ink); }
+    section { padding: 34px 0 54px; }
+    .hero { padding: 64px 0 34px; }
+    .eyebrow {
+      display: inline-block; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(42px, 5vw, 72px); line-height: 1.02; letter-spacing: -0.06em; margin: 0 0 18px; }
+    h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 12px; }
+    h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.03em; margin: 0 0 10px; }
+    p { margin: 0; }
+    .lead { max-width: 980px; font-size: 20px; color: var(--muted); }
+    .hero-grid, .stats-grid, .case-grid, .filter-grid, .update-grid, .info-grid, .footer-grid, .hero-metrics, .pipeline-grid, .search-grid, .database-grid, .ranking-grid, .wireframe-grid { display: grid; gap: 18px; }
+    .hero-grid { grid-template-columns: 1.15fr 0.85fr; align-items: stretch; margin-top: 28px; }
+    .stats-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .case-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .filter-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .update-grid { grid-template-columns: 1.05fr 0.95fr; }
+    .info-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .footer-grid { grid-template-columns: 1.1fr 0.9fr; }
+    .hero-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 20px; }
+    .pipeline-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .search-grid { grid-template-columns: 1.15fr 0.85fr; }
+    .database-grid { grid-template-columns: 1.15fr 0.85fr; }
+    .ranking-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .wireframe-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-lg); backdrop-filter: blur(16px);
+    }
+    .card.strong { background: var(--surface-strong); border-color: var(--line-strong); box-shadow: var(--shadow-md); }
+    .card.soft { background: var(--surface-soft); }
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      box-shadow: var(--shadow-xl);
+    }
+    .hero-card p, .hero-card li { color: rgba(255,255,255,0.82); }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+    }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .teal { background: var(--teal-soft); color: var(--teal); }
+    .amber { background: var(--amber-soft); color: var(--amber); }
+    .green { background: var(--green-soft); color: var(--green); }
+    .purple { background: var(--purple-soft); color: var(--purple); }
+    .label { font-size: 13px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .muted { color: var(--muted); }
+    .btnrow { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 999px; font-weight: 800; background: white; color: var(--ink);
+    }
+    .btn.ghost { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.16); }
+    .btn.dark { background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%); color: white; }
+    .mini-stat strong { display: block; font-size: 34px; letter-spacing: -0.04em; }
+    .mini-stat p { color: var(--muted); font-size: 14px; }
+    .tagrow, .pillrow, .case-meta, .chiprow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .pill, .chip { padding: 8px 12px; border-radius: 999px; background: rgba(15,23,42,0.06); font-size: 13px; font-weight: 700; }
+    .chip.active { background: #0f172a; color: white; }
+    .case-card { display: grid; gap: 12px; position: relative; overflow: hidden; }
+    .case-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+      opacity: 0.85;
+    }
+    .case-title { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; }
+    .case-summary { color: var(--muted); font-size: 15px; min-height: 96px; }
+    .metric-list, .update-list, .note-list, .search-list, .rank-list, .wireframe-list { display: grid; gap: 10px; margin-top: 14px; }
+    .metric, .update-item, .note, .search-item, .rank-item, .wireframe-item {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(255,255,255,0.64);
+    }
+    .metric strong, .update-item strong, .note strong, .search-item strong, .rank-item strong, .wireframe-item strong { display: block; margin-bottom: 4px; }
+    .filter-card { min-height: 168px; }
+    .search-box {
+      display: flex; align-items: center; gap: 12px; padding: 16px 18px; border: 1px solid var(--line-strong); border-radius: 18px; background: rgba(255,255,255,0.92); box-shadow: var(--shadow-md);
+    }
+    .search-icon { font-size: 18px; }
+    .search-placeholder { color: #94a3b8; font-size: 16px; }
+    .table {
+      display: grid; gap: 10px; margin-top: 16px;
+    }
+    .table-head, .table-row {
+      display: grid; grid-template-columns: 1.4fr 0.9fr 0.8fr 1fr 1fr 0.9fr; gap: 12px; align-items: center;
+    }
+    .table-head {
+      padding: 0 12px; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .table-row {
+      padding: 16px 12px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,0.76);
+    }
+    .table-row strong { display: block; }
+    .score {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 30px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 800;
+    }
+    .score.high { background: var(--green-soft); color: var(--green); }
+    .score.mid { background: var(--amber-soft); color: var(--amber); }
+    .score.low { background: var(--purple-soft); color: var(--purple); }
+    .footer-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      box-shadow: var(--shadow-xl);
+    }
+    .footer-card p, .footer-card li { color: rgba(255,255,255,0.82); }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    @media (max-width: 1100px) {
+      .hero-grid, .stats-grid, .case-grid, .filter-grid, .update-grid, .info-grid, .footer-grid, .pipeline-grid, .search-grid, .database-grid, .ranking-grid, .wireframe-grid { grid-template-columns: 1fr; }
+      .table-head, .table-row { grid-template-columns: 1fr 1fr; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">SD 플랫폼 메인</div>
+      <nav class="nav">
+        <a href="#hero">소개</a>
+        <a href="#search">탐색</a>
+        <a href="#stats">핵심 수치</a>
+        <a href="#cases">주목 사례</a>
+        <a href="#database">목록 프리뷰</a>
+        <a href="#wireframes">화면 바로가기</a>
+        <a href="#updates">업데이트</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="wrap">
+        <div class="eyebrow">Platform home / archive + data + cases</div>
+        <h1>소셜디자이너를 찾고, 읽고, 연결하는 데이터 기반 플랫폼 메인</h1>
+        <p class="lead">이 메인페이지는 단순 링크 허브가 아니라, 소셜디자이너의 활동을 데이터처럼 탐색하고 아카이브처럼 읽으며 협력 판단까지 이어지게 하는 플랫폼 홈을 가정한 화면입니다. 혁신의숲의 신뢰형 대시보드 감각과 유니콘 데이터랩의 탐색형 구조를 참고하되, 소셜디자이너 고유의 정성 기록과 협력 해석을 함께 담는 방향으로 고도화했습니다.</p>
+
+        <div class="hero-grid">
+          <div class="hero-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Platform concept</span>
+            <h3>소개 페이지가 아니라, 판단 가능한 사례 데이터베이스의 입구</h3>
+            <p>이 플랫폼은 팀 소개를 나열하는 데서 멈추지 않습니다. 사례별 활동 구조, 근거 자산, 성장 단계, 협력 가능성을 함께 보여줘서, 사용자가 "좋아 보인다"가 아니라 "어떻게 읽고 어디서 협력할 수 있는지"까지 판단하게 만드는 홈 화면을 지향합니다.</p>
+            <div class="btnrow">
+              <a class="btn" href="#search">사례 탐색 시작</a>
+              <a class="btn ghost" href="#database">목록 프리뷰 보기</a>
+            </div>
+            <div class="tagrow">
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">사례 아카이브</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">근거 수준 표시</span>
+              <span class="pill" style="background:rgba(255,255,255,0.14); color:white;">협력 판단 구조</span>
+            </div>
+            <div class="hero-metrics">
+              <div class="note" style="background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.16);">
+                <strong style="color:white;">혁신의숲에서 가져올 점</strong>
+                <p style="color:rgba(255,255,255,0.78);">첫 화면에서 현황 요약과 대표 사례, 핵심 지표를 명확히 보여주는 구조</p>
+              </div>
+              <div class="note" style="background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.16);">
+                <strong style="color:white;">유니콘 데이터랩에서 가져올 점</strong>
+                <p style="color:rgba(255,255,255,0.78);">검색 전에도 분류와 데이터 축으로 탐색 가능한 홈 구성과 목록형 접근</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card soft strong">
+            <span class="badge blue">Home role</span>
+            <h3>이 화면에서 바로 전달해야 할 것</h3>
+            <div class="note-list">
+              <div class="note"><strong>무엇을 찾을 수 있는가</strong><p class="muted">소셜디자이너 사례, 사업 구조, 성과, 증빙, 협력 가능성</p></div>
+              <div class="note"><strong>왜 신뢰할 수 있는가</strong><p class="muted">정량 수치만이 아니라 업데이트 이력과 근거 수준을 함께 축적</p></div>
+              <div class="note"><strong>어떻게 탐색하는가</strong><p class="muted">대표 사례, 검색 박스, 분야별 진입, 지역별 진입, 성장단계별 진입으로 시작</p></div>
+              <div class="note"><strong>지금 무엇을 볼 수 있는가</strong><p class="muted">현재는 3개 사례 심화분석이 연결되고, 이후 목록형 아카이브와 전체 DB로 확장 가능</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="search">
+      <div class="wrap">
+        <div class="label">Search & discover</div>
+        <h2>검색과 분류로 바로 들어가는 메인 진입부</h2>
+        <p class="muted" style="margin-bottom:18px;">이 블록이 들어가야 메인이 진짜 플랫폼처럼 보입니다. 실제 기능 구현 전 단계라도, 사용자는 첫 화면에서 무엇을 어떻게 찾는지 이해해야 합니다.</p>
+        <div class="search-grid">
+          <div class="card strong">
+            <span class="badge blue">Search mockup</span>
+            <div class="search-box">
+              <span class="search-icon">⌕</span>
+              <span class="search-placeholder">팀명, 분야, 지역, 협력 유형으로 검색해보세요</span>
+            </div>
+            <div class="chiprow">
+              <span class="chip active">전체</span>
+              <span class="chip">자원순환</span>
+              <span class="chip">지역상권</span>
+              <span class="chip">회복</span>
+              <span class="chip">교육</span>
+              <span class="chip">운영형</span>
+              <span class="chip">발굴형</span>
+            </div>
+            <div class="search-list">
+              <div class="search-item"><strong>빠른 진입 1. 협력 가능한 사례 찾기</strong><p class="muted">후원 가능, 구매 가능, 파트너십 가능 팀만 빠르게 분류</p></div>
+              <div class="search-item"><strong>빠른 진입 2. 지역 기반 사례 보기</strong><p class="muted">생활권 단위 실험과 로컬 인프라 복원 사례 중심 탐색</p></div>
+              <div class="search-item"><strong>빠른 진입 3. 리포트 전환 가능한 사례 보기</strong><p class="muted">성과와 근거가 축적되어 외부 리포트로 이어지기 쉬운 팀 탐색</p></div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge teal">왜 중요한가</span>
+            <div class="note-list">
+              <div class="note"><strong>검색창은 상징 기능</strong><p class="muted">실제 검색 기능이 없어도 플랫폼이 데이터를 다룬다는 인상을 바로 줍니다.</p></div>
+              <div class="note"><strong>분류칩은 탐색 기능</strong><p class="muted">사용자가 무엇으로 사례를 나눠 읽는지 기준을 미리 학습하게 합니다.</p></div>
+              <div class="note"><strong>빠른 진입은 활용 기능</strong><p class="muted">관심 있는 사용자가 바로 행동할 수 있는 길을 만들어줍니다.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats">
+      <div class="wrap">
+        <div class="label">Trust metrics</div>
+        <h2>핵심 수치와 축적 현황</h2>
+        <p class="muted" style="margin-bottom:18px;">플랫폼 메인은 브랜딩 문장보다 축적 상태를 먼저 보여주는 편이 강합니다. 아래 수치는 향후 실제 통합시트와 연동될 수 있는 자리입니다.</p>
+        <div class="stats-grid">
+          <div class="card mini-stat"><span class="badge blue">현재 공개 사례</span><strong>3</strong><p>심화분석 상세페이지가 연결된 사례 수</p></div>
+          <div class="card mini-stat"><span class="badge teal">분석 프레임</span><strong>7</strong><p>통합모델 항목 기준으로 읽는 공통 해석 축</p></div>
+          <div class="card mini-stat"><span class="badge amber">주요 탐색 축</span><strong>4</strong><p>분야, 지역, 성장 단계, 협력 유형 탐색</p></div>
+          <div class="card mini-stat"><span class="badge green">축적 방식</span><strong>2층</strong><p>요약 프로필 + 심화분석 상세의 이중 구조</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases">
+      <div class="wrap">
+        <div class="label">Featured cases</div>
+        <h2>대표 사례와 심화분석 진입</h2>
+        <p class="muted" style="margin-bottom:18px;">메인에서는 대표 사례를 요약해 보여주고, 사용자는 바로 상세 분석으로 들어갈 수 있어야 합니다.</p>
+        <div class="case-grid">
+          <div class="card case-card strong">
+            <span class="badge blue">기준본 사례 / 운영형</span>
+            <div class="case-title">커피클레이</div>
+            <div class="case-meta">
+              <span class="pill">자원순환</span>
+              <span class="pill">시니어 생산</span>
+              <span class="pill">교육</span>
+            </div>
+            <p class="case-summary">커피박 자원순환, 시니어 생산 구조, 교육 프로그램, 연대생산 구조가 함께 작동하는 사례입니다. 현재 공개 사례 중 가장 운영 구조와 외부 협력 번역력이 분명한 팀입니다.</p>
+            <div class="metric-list">
+              <div class="metric"><strong>읽는 포인트</strong><p class="muted">패키지화 가능성, 확산 구조, 협력 제안 번역력</p></div>
+            </div>
+            <div class="btnrow" style="margin-top:0;"><a class="btn dark" href="커피클레이_심화분석뷰_v2.html">심화분석 보기</a></div>
+          </div>
+          <div class="card case-card strong">
+            <span class="badge teal">생활권 사례 / 발굴형</span>
+            <div class="case-title">동락점빵</div>
+            <div class="case-meta">
+              <span class="pill">생활 인프라</span>
+              <span class="pill">이동장터</span>
+              <span class="pill">복지연계</span>
+            </div>
+            <p class="case-summary">농촌 식품사막화와 생활 인프라 공백 문제를 이동장터, 공공급식, 복지연계, 관계망으로 풀어내는 사례입니다. 현장 강도는 높지만 기록 구조를 보강해야 하는 팀입니다.</p>
+            <div class="metric-list">
+              <div class="metric"><strong>읽는 포인트</strong><p class="muted">생활권 밀도, 공공협력 가능성, 운영 기록의 필요성</p></div>
+            </div>
+            <div class="btnrow" style="margin-top:0;"><a class="btn dark" href="동락점빵_심화분석뷰_v2.html">심화분석 보기</a></div>
+          </div>
+          <div class="card case-card strong">
+            <span class="badge amber">회복 플랫폼 / 발굴형</span>
+            <div class="case-title">스튜디오 어중간</div>
+            <div class="case-meta">
+              <span class="pill">매거진</span>
+              <span class="pill">포럼</span>
+              <span class="pill">연구</span>
+            </div>
+            <p class="case-summary">2030 젊은 투병인의 고립과 회복 문제를 콘텐츠, 인터뷰, 포럼, 연구, 회복 공간 구상으로 가시화하는 사례입니다. 운영형 모델보다 공적 해석과 학습 자산이 먼저 드러나는 팀입니다.</p>
+            <div class="metric-list">
+              <div class="metric"><strong>읽는 포인트</strong><p class="muted">문제 가시화, 회복 서사, 플랫폼화 가능성</p></div>
+            </div>
+            <div class="btnrow" style="margin-top:0;"><a class="btn dark" href="스튜디오어중간_심화분석뷰_v2.html">심화분석 보기</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="database">
+      <div class="wrap">
+        <div class="label">Database preview</div>
+        <h2>목록형 데이터베이스 프리뷰</h2>
+        <p class="muted" style="margin-bottom:18px;">혁신의숲, 유니콘 데이터랩의 강점은 목록형 읽기입니다. 메인에도 일부 프리뷰가 있어야 플랫폼의 데이터 성격이 더 분명해집니다.</p>
+        <div class="database-grid">
+          <div class="card strong">
+            <span class="badge blue">Case list preview</span>
+            <div class="table">
+              <div class="table-head">
+                <div>사례명</div>
+                <div>분야</div>
+                <div>단계</div>
+                <div>협력 가능성</div>
+                <div>핵심 해석</div>
+                <div>상세</div>
+              </div>
+              <div class="table-row">
+                <div><strong>커피클레이</strong><span class="muted">패키지/확산 전환형</span></div>
+                <div>자원순환</div>
+                <div>S2 운영형</div>
+                <div><span class="score high">높음</span></div>
+                <div>운영 구조와 확장성이 함께 보임</div>
+                <div><a href="커피클레이_심화분석뷰_v2.html">보기</a></div>
+              </div>
+              <div class="table-row">
+                <div><strong>동락점빵</strong><span class="muted">생활권 밀도형</span></div>
+                <div>지역상권/생활</div>
+                <div>S1 발굴형</div>
+                <div><span class="score mid">조건부</span></div>
+                <div>현장 강도는 높고 기록 구조는 보완 필요</div>
+                <div><a href="동락점빵_심화분석뷰_v2.html">보기</a></div>
+              </div>
+              <div class="table-row">
+                <div><strong>스튜디오 어중간</strong><span class="muted">회복/연구 플랫폼형</span></div>
+                <div>회복/콘텐츠</div>
+                <div>S1 발굴형</div>
+                <div><span class="score low">중간</span></div>
+                <div>문제 가시화와 학습 자산이 핵심</div>
+                <div><a href="스튜디오어중간_심화분석뷰_v2.html">보기</a></div>
+              </div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge teal">이 프리뷰의 역할</span>
+            <div class="note-list">
+              <div class="note"><strong>카드형과 목록형을 함께 둔다</strong><p class="muted">감성적 소개만이 아니라, 비교 가능한 데이터 느낌을 줍니다.</p></div>
+              <div class="note"><strong>협력 판단을 전면화한다</strong><p class="muted">분야나 소개보다, 외부 사용자가 궁금해할 판단 항목을 같이 노출합니다.</p></div>
+              <div class="note"><strong>향후 전체 아카이브로 확장 가능하다</strong><p class="muted">실제 구축 시 리스트 페이지나 검색 결과 페이지로 자연스럽게 이어질 수 있습니다.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="filters">
+      <div class="wrap">
+        <div class="label">Explore</div>
+        <h2>분야와 상태로 탐색</h2>
+        <p class="muted" style="margin-bottom:18px;">메인 홈은 검색창만 두는 것보다 먼저 탐색 구조를 제시하는 편이 강합니다.</p>
+        <div class="filter-grid">
+          <div class="card filter-card"><span class="badge blue">분야별</span><h3>주제 탐색</h3><p class="muted">자원순환, 지역상권, 돌봄, 회복, 교육, 문화기획 등 문제/분야 축으로 탐색</p></div>
+          <div class="card filter-card"><span class="badge teal">지역별</span><h3>지역 탐색</h3><p class="muted">권역, 시군구, 생활권 단위로 사례를 찾고 지역 특성과 연결해 읽기</p></div>
+          <div class="card filter-card"><span class="badge amber">성장단계별</span><h3>상태 탐색</h3><p class="muted">발굴형, 운영형, 확장형 등 단계 기준으로 사례를 비교하고 읽기</p></div>
+          <div class="card filter-card"><span class="badge purple">협력유형별</span><h3>활용 목적 탐색</h3><p class="muted">후원 가능, 구매 가능, 파트너십 가능, 리포트 전환 가능 여부 중심 탐색</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="label">Curated rankings</div>
+        <h2>메인에서 바로 보는 큐레이션 블록</h2>
+        <p class="muted" style="margin-bottom:18px;">실제 랭킹 플랫폼으로 과장하면 안 되지만, 사용자가 빨리 읽도록 돕는 큐레이션 블록은 유효합니다.</p>
+        <div class="ranking-grid">
+          <div class="card">
+            <span class="badge green">협력 제안이 쉬운 사례</span>
+            <div class="rank-list">
+              <div class="rank-item"><strong>1. 커피클레이</strong><p class="muted">협력 포인트와 제안 문장으로 번역하기 쉬움</p></div>
+              <div class="rank-item"><strong>2. 동락점빵</strong><p class="muted">공공협력과 생활권 기반 제안 구조가 가능</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="badge amber">추가 기록이 필요한 사례</span>
+            <div class="rank-list">
+              <div class="rank-item"><strong>1. 동락점빵</strong><p class="muted">현장 강도 대비 운영 기록과 구조화가 부족</p></div>
+              <div class="rank-item"><strong>2. 스튜디오 어중간</strong><p class="muted">학습 자산은 있으나 운영 구조 근거 보강 필요</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="badge purple">리포트 전환 가능 사례</span>
+            <div class="rank-list">
+              <div class="rank-item"><strong>1. 커피클레이</strong><p class="muted">외부 전달용 리포트와 사례화가 가장 용이</p></div>
+              <div class="rank-item"><strong>2. 스튜디오 어중간</strong><p class="muted">문제 해석과 담론 리포트 관점에서 가능성 있음</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="wireframes">
+      <div class="wrap">
+        <div class="label">Screen access</div>
+        <h2>주요 와이어프레임 화면 바로가기</h2>
+        <p class="muted" style="margin-bottom:18px;">심화분석 사례뿐 아니라, `03-wireframes` 안에 있는 주요 플랫폼 화면 시안에도 바로 접근할 수 있도록 버튼을 추가했습니다.</p>
+        <div class="wireframe-grid">
+          <div class="card strong">
+            <span class="badge blue">Platform flow</span>
+            <h3>플랫폼 핵심 화면</h3>
+            <div class="wireframe-list">
+              <div class="wireframe-item"><strong>메인 홈</strong><p class="muted">플랫폼 첫 화면 구조와 진입 동선</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="SDPlatform.home.wireframe.html">홈 화면 보기</a></div></div>
+              <div class="wireframe-item"><strong>목록/탐색</strong><p class="muted">사례를 검색하고 분류하는 리스트형 화면</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="SDPlatform.list-explore.wireframe.html">목록 화면 보기</a></div></div>
+              <div class="wireframe-item"><strong>공개 상세</strong><p class="muted">팀 소개와 활동 구조를 보여주는 공개 프로필 화면</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="SDPlatform.detail-public.wireframe.html">공개 상세 보기</a></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="badge teal">Operations</span>
+            <h3>운영/관리 화면</h3>
+            <div class="wireframe-list">
+              <div class="wireframe-item"><strong>운영 어드민</strong><p class="muted">내부 관리와 운영 구조를 가정한 관리자 화면</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="SDPlatform.admin.wireframe.html">어드민 보기</a></div></div>
+              <div class="wireframe-item"><strong>통합 페이지 묶음</strong><p class="muted">여러 와이어프레임 페이지를 한 번에 확인하는 묶음 파일</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="SDPlatform.wireframe.pages.html">통합 보기</a></div></div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge amber">Archive reference</span>
+            <h3>보조 참고 화면</h3>
+            <div class="wireframe-list">
+              <div class="wireframe-item"><strong>SD 활동 아카이브 카드</strong><p class="muted">활동 카드 필드 구조를 시각화한 참고 화면</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="SD활동아카이브_카드필드_v1.html">카드 필드 보기</a></div></div>
+              <div class="wireframe-item"><strong>현재 index</strong><p class="muted">지금 보고 있는 플랫폼 메인 시안</p><div class="btnrow" style="margin-top:12px;"><a class="btn dark" href="index.html">현재 메인 보기</a></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="updates">
+      <div class="wrap">
+        <div class="label">Live archive</div>
+        <h2>최근 업데이트와 리포트 진입</h2>
+        <p class="muted" style="margin-bottom:18px;">플랫폼 메인은 정적 소개보다 살아 있는 아카이브처럼 보여야 합니다. 그래서 업데이트와 자료 진입 블록이 필요합니다.</p>
+        <div class="update-grid">
+          <div class="card">
+            <span class="badge blue">최근 업데이트 사례</span>
+            <div class="update-list">
+              <div class="update-item"><strong>커피클레이</strong><p class="muted">심화분석 v2 기준본, 운영 구조와 협력 제안 해석 정리</p></div>
+              <div class="update-item"><strong>동락점빵</strong><p class="muted">공통 템플릿 기준으로 생활권 밀도형 해석 구조 재정렬</p></div>
+              <div class="update-item"><strong>스튜디오 어중간</strong><p class="muted">회복/연구 플랫폼형 관점으로 종합 검토와 협력 제안 정비</p></div>
+            </div>
+          </div>
+          <div class="card soft">
+            <span class="badge teal">이후 확장될 자료 영역</span>
+            <div class="update-list">
+              <div class="update-item"><strong>통합모델 리포트</strong><p class="muted">사례별 성장 단계와 협력 가능성 비교 자료</p></div>
+              <div class="update-item"><strong>증빙 패키지</strong><p class="muted">기사, 사진, 운영기록, 피드백 등 공개 가능한 근거 묶음</p></div>
+              <div class="update-item"><strong>파트너십 제안서</strong><p class="muted">외부 협력을 위한 요약본, 리포트, 제안 자료 연결 영역</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="label">Platform perspective</div>
+        <h2>이 플랫폼은 무엇을 기록하고 왜 필요한가</h2>
+        <div class="info-grid" style="margin-top:18px;">
+          <div class="card">
+            <span class="badge blue">기록 대상</span>
+            <h3>완성된 성과만이 아니라 시도와 운영 구조</h3>
+            <p class="muted">소셜디자이너의 활동은 숫자만으로 설명되지 않습니다. 판단, 관계, 서사, 실험 경험도 함께 기록되어야 실제 가치가 드러납니다.</p>
+          </div>
+          <div class="card">
+            <span class="badge teal">해석 관점</span>
+            <h3>정량과 정성을 분리하지 않고 함께 읽기</h3>
+            <p class="muted">수치와 이야기, 사업 구조와 증빙을 따로 두지 않고 연결해 읽게 하는 것이 이 플랫폼의 핵심입니다.</p>
+          </div>
+          <div class="card">
+            <span class="badge amber">활용 목적</span>
+            <h3>소개를 넘어 협력과 후속 판단의 기반 만들기</h3>
+            <p class="muted">이 플랫폼은 단순 소개 페이지가 아니라 후원, 구매, 제안, 파트너십, 리포트 전환의 근거 페이지가 되어야 합니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-card">
+            <span class="badge" style="background:rgba(255,255,255,0.14); color:white;">Main structure</span>
+            <h3>메인페이지가 갖춰야 할 최소 구조</h3>
+            <p>플랫폼 소개, 검색/분류 진입, 핵심 수치, 대표 사례, 목록형 프리뷰, 최근 업데이트가 한 화면 안에서 이어져야 합니다. 지금은 사례 3팀이지만, 이후 전체 사례 목록과 리포트, 증빙 자산으로 자연스럽게 확장될 수 있어야 합니다.</p>
+          </div>
+          <div class="card soft">
+            <span class="badge blue">Current file role</span>
+            <h3>현재 index의 역할</h3>
+            <ul>
+              <li>`03-wireframes` 안에서 플랫폼형 메인페이지 역할</li>
+              <li>사례 3팀 심화분석으로 진입하는 홈 화면 역할</li>
+              <li>검색형 데이터 플랫폼으로 확장될 IA를 미리 보여주는 개념 시안 역할</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
